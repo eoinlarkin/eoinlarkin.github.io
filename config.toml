@@ -1,4 +1,4 @@
-baseurl = "/"
+baseurl = "https://eoinlarkin.github.io/"
 publishDir = "/"
 languageCode = "en-us"
 title = "A Hugo website"
