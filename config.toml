@@ -6,6 +6,8 @@ theme = "hugo-lithium"
 googleAnalytics = ""
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", "\\.knit\\.md$", "\\.utf8\\.md$"]
+summaryLength = 35
+
 
 [permalinks]
     post = "/:year/:month/:day/:slug/"

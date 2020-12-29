@@ -14,7 +14,7 @@
       
       <guid>https://eoinlarkin.github.io/2020/12/29/test-post-2/</guid>
       <description>knitr::opts_chunk$set(echo = TRUE)R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-When you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</description>
+When you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.</description>
     </item>
     
     <item>
@@ -24,7 +24,7 @@ When you click the Knit button a document will be generated that includes both c
       
       <guid>https://eoinlarkin.github.io/2020/12/29/test-post-3/</guid>
       <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-When you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</description>
+When you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.</description>
     </item>
     
     <item>
@@ -34,8 +34,7 @@ When you click the Knit button a document will be generated that includes both c
       
       <guid>https://eoinlarkin.github.io/2020/07/23/hello-r-markdown/</guid>
       <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars)## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.</description>
+You can embed an R code chunk like this:</description>
     </item>
     
     <item>
@@ -44,7 +43,7 @@ summary(cars)## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
       <pubDate>Wed, 01 Jan 2020 13:09:13 -0600</pubDate>
       
       <guid>https://eoinlarkin.github.io/2020/01/01/lorem-ipsum/</guid>
-      <description>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</description>
+      <description>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</description>
     </item>
     
   </channel>
