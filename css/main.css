@@ -18,7 +18,7 @@ h3,
 h4,
 h5,
 h6 {
-  color: #222;
+  color: #5d7ea2;
 }
 
 a {
@@ -175,8 +175,8 @@ code {
 }
 
 .archive-item-summary {
-  font-size: 15px;
-  color: #666;
+  font-size: 10px;
+  color: #5d7ea2;
 }
 
 
@@ -291,6 +291,12 @@ code {
   .archive-title {
     font-size: 38px;
   }
+
+  .archive-item-summary {
+	font-size: 10px;
+	color: #5d7ea2;
+  }
+
 
   .archive-item-date {
     font-size: 19px;
