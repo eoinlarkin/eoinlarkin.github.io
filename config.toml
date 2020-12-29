@@ -1,0 +1,29 @@
+theme = "hugo-xmin"
+languageCode = "en-us"
+title = "Test Blog"
+baseURL = "https://eoinlarkin.github.io/eoinlarkin.github.io/"
+publishDir = "/"
+
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+enableEmoji = true
+
+
+[[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+[[menu.main]]
+    name = "About"
+    url = "/about/"
+    weight = 2
+[[menu.main]]
+    name = "Categories"
+    url = "/categories/"
+    weight = 3
+[[menu.main]]
+    name = "Tags"
+    url = "/tags/"
+    weight = 4
+[[menu.main]]
+    name = "Subscribe"
+    url = "/index.xml"
