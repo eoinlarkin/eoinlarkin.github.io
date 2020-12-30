@@ -67,7 +67,18 @@ This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown pac
     </item>
     
     <item>
-      <title>About</title>
+      <title>Bookshelf</title>
+      <link>https://eoinlarkin.github.io/bookshelf/</link>
+      <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
+      
+      <guid>https://eoinlarkin.github.io/bookshelf/</guid>
+      <description>Inteneded to be a list of books
+Business:
+Financial Crisis:</description>
+    </item>
+    
+    <item>
+      <title>Exploring</title>
       <link>https://eoinlarkin.github.io/exploring/</link>
       <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
       
