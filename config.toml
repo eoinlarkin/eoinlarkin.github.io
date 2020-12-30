@@ -54,3 +54,7 @@ summaryLength = 35
     height = 50
     alt = "Logo"
 
+  # Custom CSS. Put here your custom CSS files. They are loaded after the theme CSS;
+  # they have to be referred from static root. Example
+  #[[params.customCSS]]
+  #href = "css/mystyle.css"
