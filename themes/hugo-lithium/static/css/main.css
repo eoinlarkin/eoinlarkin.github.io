@@ -18,7 +18,7 @@ h3,
 h4,
 h5,
 h6 {
-  color: #5d7ea2;
+  color: #222;
 }
 
 a {
@@ -92,9 +92,9 @@ code {
 
 .content {
   max-width: 700px;
-  margin: 40px auto 10px;
+  margin: 30px auto 10px;
   padding: 0 15px;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.7;
   color: #333;
 }
@@ -175,8 +175,8 @@ code {
 }
 
 .archive-item-summary {
-  font-size: 10px;
-  color: #5d7ea2;
+  font-size: 15x;
+  color: #808080;
 }
 
 
@@ -275,7 +275,7 @@ code {
   }
 
   .content {
-    font-size: 19px;
+    font-size: 14px;
     line-height: 1.8;
   }
 
@@ -293,8 +293,8 @@ code {
   }
 
   .archive-item-summary {
-	font-size: 10px;
-	color: #5d7ea2;
+	font-size: 15px;
+	color: #808080;
   }
 
 
