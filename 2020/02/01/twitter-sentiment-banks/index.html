@@ -22,6 +22,11 @@
 
 
 
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
 <link rel="stylesheet" href="/css/fonts.css" media="all">
 <link rel="stylesheet" href="/css/main.css" media="all">
 
@@ -41,11 +46,13 @@
 
   <ul class="nav-links">
     
+    <li><a href="/exploring/">Exploring</a></li>
+    
     <li><a href="/about/">About</a></li>
     
     <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
     
-    <li><a href="https://twitter.com/rstudio">Twitter</a></li>
+    <li><a href="https://www.linkedin.com/in/eoinlarkin/">LinkedIn</a></li>
     
   </ul>
 </nav>
@@ -71,8 +78,6 @@
 <script src="index_files/header-attrs/header-attrs.js"></script>
 
 
-<div id="twitter-sentiment-analysis" class="section level2">
-<h2>Twitter Sentiment Analysis</h2>
 <p>Analysing sentiment based on a text string is pretty classic introductory problem in the field of Machine Learning.</p>
 <p>The idea is seductively simple - by analysing the data of publically available tweets is it possible to discern or extrapolate some additional analysis.</p>
 <p>Nevertheless the analysis does provide the opportunity to plot some pretty graphs</p>
@@ -126,7 +131,21 @@
 </tr>
 </tbody>
 </table>
-</div>
+<pre class="r"><code># ***************************************************
+# Plotting AIB / BOI Output over a four month window
+# ***************************************************
+
+
+ggplot(rbind(aib_by_week, boi_by_week), aes(x=as.Date(date_week), y=cnt, fill= account)) +
+  geom_bar(stat=&quot;identity&quot;, position=&quot;dodge&quot;, color=&#39;white&#39;)+
+  labs(x=&quot;Weekly Block&quot;, y=&quot;Tweet Count&quot;) +
+  scale_x_date(breaks = &#39;1 weeks&#39;, date_labels = &quot;%b-%d&quot;) +
+  ggtitle(&quot;Tweet Activity per Week&quot;) + 
+  scale_fill_manual(&quot;Account&quot;, values = c(&quot;@aibireland&quot; = &quot;mediumpurple4&quot;, &quot;@bankofireland&quot; = &quot;dodgerblue4&quot;)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) 
+
+# Saving output of ggplot
+# ggsave(&quot;tweet_activity_per_week.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)</code></pre>
 </div>
 
     </div>
@@ -150,6 +169,18 @@
 
     </div>
     
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
 
     
 

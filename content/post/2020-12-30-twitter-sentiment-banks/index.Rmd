@@ -7,8 +7,6 @@ categories: []
 tags: []
 ---
 
-## Twitter Sentiment Analysis
-
 Analysing sentiment based on a text string is pretty classic introductory problem in the field of Machine Learning.
 
 The idea is seductively simple - by analysing the data of publically available tweets is it possible to discern or extrapolate some additional analysis.
@@ -79,7 +77,7 @@ access_sec <- "tk1IjdZGaC1VIGhdCmMyZoEPGgi6QnfcEd40GYReG9nrX"
 #  consumer_key = key,
 #  consumer_secret = secret)
 
-get_token() # Testing token
+#get_token() # Testing token
 
 ```
 
@@ -110,23 +108,25 @@ save_as_csv(tweets_to_aib, '_raw_tweets_to_aib.csv')
 
 
 ```{r include=FALSE,eval=FALSE}
-setwd("C:/Users/Eoin/OneDrive/Data Science/Projects/Tweet Analysis")
+path <- "C:/Users/Eoin/OneDrive/Data Science/Projects/Tweet Analysis/"
 
+boi_timeline <- read_twitter_csv(file.path(path, '_raw_boi_main_timeline.csv'))
+aib_timeline <- read_twitter_csv(file.path(path,'_raw_aib_main_timeline.csv'))
 
-boi_timeline <- read_twitter_csv('_raw_boi_main_timeline.csv')
-aib_timeline <- read_twitter_csv('_raw_aib_main_timeline.csv')
+tweets_aib <- read_twitter_csv(file.path(path,'_raw_tweets_to_aib_support.csv'))
+tweets_boi <- read_twitter_csv(file.path(path,'_raw_tweets_to_boi_support.csv'))
 
-tweets_aib <- read_twitter_csv('_raw_tweets_to_aib_support.csv')
-tweets_boi <- read_twitter_csv('_raw_tweets_to_boi_support.csv')
-
-tweets_30day_aib <- read_twitter_csv('_raw_tweets_to_aib.csv') %>%
+tweets_30day_aib <- read_twitter_csv(file.path(path,'_raw_tweets_to_aib.csv')) %>%
                     filter(screen_name != 'AskAIB')
     
-tweets_30day_boi <- read_twitter_csv('_raw_tweets_to_boi_main.csv') %>%
+tweets_30day_boi <- read_twitter_csv(file.path(path,'_raw_tweets_to_boi_main.csv')) %>%
                     filter(screen_name != 'talktoBOI')
 
 filter_date <- '2019-07-08'
+```
 
+
+```{r include=FALSE,eval=FALSE}
 # Cleaining up the text in the tweets
 boi_timeline$text_clean = plain_tweets(gsub("\\s?(f|ht)(tp)(s?)(://)([^\\.]*)[\\.|/](\\S*)", "", boi_timeline$text))
 aib_timeline$text_clean = plain_tweets(gsub("\\s?(f|ht)(tp)(s?)(://)([^\\.]*)[\\.|/](\\S*)", "", aib_timeline$text))
@@ -135,16 +135,18 @@ tweets_boi$text_clean = plain_tweets(gsub("\\s?(f|ht)(tp)(s?)(://)([^\\.]*)[\\.|
 tweets_30day_aib$text_clean = plain_tweets(gsub("\\s?(f|ht)(tp)(s?)(://)([^\\.]*)[\\.|/](\\S*)", "", tweets_30day_aib$text))
 tweets_30day_boi$text_clean = plain_tweets(gsub("\\s?(f|ht)(tp)(s?)(://)([^\\.]*)[\\.|/](\\S*)", "", tweets_30day_boi$text)) 
 
+```
 
-# ***************************************************
-# Plotting AIB / BOI Output over a four month window
-# ***************************************************
+
+
+```{r include=FALSE,eval=FALSE}
 
 
 # Converting the date into weekly blocks
-boi_timeline$date_week <- data.frame(as.Date(floor_date(boi_timeline$created_at, unit = "week")))
+boi_timeline$date_week <- data.frame(floor_date(as.Date(boi_timeline$created_at), unit = "week"))
 names(boi_timeline$date_week) = "date_week"
-aib_timeline$date_week <- data.frame(as.Date(floor_date(aib_timeline$created_at, unit = "week")))
+
+aib_timeline$date_week <- data.frame(floor_date(as.Date(aib_timeline$created_at), unit = "week"))
 names(aib_timeline$date_week) = "date_week"
 
 boi_by_week <- as_tibble(boi_timeline$date_week) %>%
@@ -159,8 +161,16 @@ aib_by_week <- as_tibble(aib_timeline$date_week) %>%
   summarise(cnt = n()) %>%
   mutate(account = '@aibireland')
 
+```
 
-ggplot(rbind(aib_by_week, boi_by_week), aes(x=date_week, y=cnt, fill= account)) +
+```{r include=TRUE,eval=FALSE}
+
+# ***************************************************
+# Plotting AIB / BOI Output over a four month window
+# ***************************************************
+
+
+ggplot(rbind(aib_by_week, boi_by_week), aes(x=as.Date(date_week), y=cnt, fill= account)) +
   geom_bar(stat="identity", position="dodge", color='white')+
   labs(x="Weekly Block", y="Tweet Count") +
   scale_x_date(breaks = '1 weeks', date_labels = "%b-%d") +
@@ -168,7 +178,13 @@ ggplot(rbind(aib_by_week, boi_by_week), aes(x=date_week, y=cnt, fill= account)) 
   scale_fill_manual("Account", values = c("@aibireland" = "mediumpurple4", "@bankofireland" = "dodgerblue4")) +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) 
 
-ggsave("tweet_activity_per_week.png", width = 10, height = 6, units = "in", dpi=200)
+# Saving output of ggplot
+# ggsave("tweet_activity_per_week.png", width = 10, height = 6, units = "in", dpi=200)
+
+```
+
+
+```{r include=FALSE,eval=FALSE}
 
 # ***************************************************
 # Getting top 5 tweets -> last four months
@@ -202,11 +218,14 @@ top_viral_aib <- aib_timeline %>%
 top_viral_aib <- top_viral_aib[c("created_at","text_clean","favorite_count", "retweet_count")]
 top_viral_aib$created_at <- format(top_viral_aib$created_at, "%b-%d")
 
-write.csv(top_viral_aib,"top_viral_aib.csv")
-write.csv(top_viral_boi,"top_viral_boi.csv")
-write.csv(top_tweet_aib,"top_tweet_aib.csv")
-write.csv(top_tweet_boi,"top_tweet_boi.csv")
+#write.csv(top_viral_aib,"top_viral_aib.csv")
+#write.csv(top_viral_boi,"top_viral_boi.csv")
+#write.csv(top_tweet_aib,"top_tweet_aib.csv")
+#write.csv(top_tweet_boi,"top_tweet_boi.csv")
 
+```
+
+```{r include=FALSE,eval=FALSE}
 
 # ***************************************************
 # Device analysis - last 30 days - Main Accounts

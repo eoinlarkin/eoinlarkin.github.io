@@ -19,8 +19,13 @@ summaryLength = 35
     name = "GitHub"
     url = "https://github.com/rstudio/blogdown"
 [[menu.main]]
-    name = "Twitter"
-    url = "https://twitter.com/rstudio"
+    name = "LinkedIn"
+    url = "https://www.linkedin.com/in/eoinlarkin/"
+    
+[[menu.main]]
+    name = "Exploring"
+    url = "/exploring/"
+    weight = 4
 
 [params]
     description = "A website built through Hugo and blogdown."
