@@ -1,0 +1,116 @@
+---
+title: Visualizing Strava Activities with R
+author: Eoin Larkin
+date: '2020-10-01'
+slug: strava-r
+categories: []
+tags: []
+---
+
+
+
+<p>Strava is an internet service for tracking human exercise which incorporates social network features - it is sometimes referred to as Facebook for cyclist. Strava allows the visualisation of sports activities</p>
+<p>Process:
+- Bulk export data from Strava using the
+- Covert exported data to gpx files with GPSBabel
+- Import data into R and use the Strava library by Marcus Volz to visualise the data <a href="https://github.com/marcusvolz">Link</a></p>
+<p>The <code>strava</code> library makes visualizing and creating heatmaps of activities super simple. Howeer, it does require the activitiy files to be in <code>gpx</code> file format. This can cause some issues as the Strava bulk export can be in multiple file formats including <code>.fit</code> and <code>.tcx</code> depending on the make and model of the device that was used to record the activitiy.</p>
+<p>Conversion of the files to the <code>gpx</code> file format is relatively straightforward; however at the time of writing the Strava output format for <code>tcx</code> files is not fully consistent with the file format specification. This issues is detailed in more detail here: <a href="https://github.com/gpsbabel/gpsbabel/issues/371">Link</a></p>
+<p>GPSBabel is very well documented and has cross platform support; it can be downloaded from here: <a href="https://www.gpsbabel.org/">Link</a></p>
+<p>Details on using GPSBabel to batch covert a set of files in Windows can be found here :<a href="https://www.gpsbabel.org/os/Windows_batch.html">Link</a></p>
+<p>The first step is to load gpx activity files into Strava. This can be achieved by using the <code>process_data()</code> function from the <code>strava</code> package. The function converts the activity files into a single data frame which can then be easily plotted using <code>ggplot</code>.</p>
+<pre class="r"><code>library(strava) # loading the Strava package</code></pre>
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Loading required package: gtools</code></pre>
+<pre><code>## Loading required package: mapproj</code></pre>
+<pre><code>## Loading required package: maps</code></pre>
+<pre class="r"><code>library(patchwork) # for aligning the plots
+data &lt;- process_data(path) # loading the activities</code></pre>
+<div id="facets-plot" class="section level2">
+<h2>Facets Plot</h2>
+<p>The facets plot is the first of the plots that can be easily created using the package. Each activity file is visualised individually with a trace outline of the route of each of the activities.</p>
+<pre class="r"><code>p1 &lt;- plot_facets(data) + 
+  theme(plot.margin = margin(0.5,0.5,0.5,0.5, &quot;cm&quot;))
+
+ggsave(&quot;facets001.png&quot;, p1, width = 10, height = 10, units = &quot;cm&quot;, dpi=1200)
+
+p1</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="heatmap-plot" class="section level2">
+<h2>Heatmap Plot</h2>
+<p>Next, the <code>plot_map</code> function makes creating heatmaps super simple. As part of the plotting, option latitude and longitude coordinates can be defined. As the library uses standard <code>ggplot</code> functions, additional code can be included to add titles and to modify the plot margins.</p>
+<pre class="r"><code># Defining our list of locations
+loc &lt;- list(dublin=c(-6.86, -6.00, 53.03, 53.46), 
+                  trieste=c(13.42, 14.28, 45.47, 45.9), 
+                  galway=c(-8.56, -9.78, 52.85, 53.46))
+
+# Trieste
+p2 &lt;- plot_map(data, lon_min = loc$trieste[1], lon_max = loc$trieste[2], lat_min = loc$trieste[3], lat_max = loc$trieste[4]) +
+      theme(plot.margin = margin(0.25,0.25,0.25,0.25, &quot;cm&quot;)) +
+      theme(plot.title = element_text(color = &quot;gray40&quot;, size = 16, face = &quot;bold&quot;),
+                            plot.subtitle = element_text(color = &quot;gray40&quot;, size=3)) +
+      theme(panel.border = element_rect(colour = &quot;gray40&quot;, fill=NA, size=1)) 
+      #+ labs(title = &quot;Trieste&quot;)
+                           
+# Dublin
+p3 &lt;- plot_map(data, lon_min = loc$dublin[1], lon_max = loc$dublin[2], lat_min = loc$dublin[3], lat_max = loc$dublin[4]) +
+      theme(plot.margin = margin(0.25,0.25,0.25,0.25, &quot;cm&quot;)) +
+      theme(plot.title = element_text(color = &quot;gray40&quot;, size = 16, face = &quot;bold&quot;),
+                            plot.subtitle = element_text(color = &quot;gray40&quot;, size=3)) +
+      theme(panel.border = element_rect(colour = &quot;gray40&quot;, fill=NA, size=1)) 
+      # + labs(title = &quot;Dublin&quot;) 
+
+# Galway
+p4 &lt;- plot_map(data, lon_min = loc$galway[1], lon_max = loc$galway[2], lat_min = loc$galway[3], lat_max = loc$galway[4]) +
+      theme(plot.margin = margin(0.25,0.25,0.25,0.25, &quot;cm&quot;)) +
+      theme(plot.title = element_text(color = &quot;gray40&quot;, size = 16, face = &quot;bold&quot;),
+                            plot.subtitle = element_text(color = &quot;gray40&quot;, size=3)) +
+      theme(panel.border = element_rect(colour = &quot;gray40&quot;, fill=NA, size=1)) 
+      # + labs(title = &quot;Galway&quot;)
+  
+# Arranging the plots using the patchwork package
+plot_merge &lt;- (p2 / p3 / p4) # creates a merged stacked plot
+plot_merge</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code># Saving the plot output
+# ggsave(&quot;map_merge.png&quot;, plot_merge, width = 10, height = 25, units = &quot;cm&quot;,)
+ggsave(&quot;map_merge.png&quot;, plot_merge)</code></pre>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<pre class="r"><code>ggsave(&quot;map_trieste.png&quot;, p2) # individually saving the plot</code></pre>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<pre class="r"><code>ggsave(&quot;map_dublin.png&quot;, p3)  # individually saving the plot </code></pre>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<pre class="r"><code>ggsave(&quot;map_galway.png&quot;, p4) # individually saving the plot</code></pre>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+</div>
+<div id="activity-timeline" class="section level2">
+<h2>Activity Timeline</h2>
+<p>Activities can also be visualised in a calendar format:</p>
+<pre class="r"><code>p5 &lt;- plot_calendar(data, unit = &quot;distance&quot;)
+
+# Saving the plot output
+ggsave(&quot;calendar001.png&quot;, p4, width = 7, height = 7, units = &quot;cm&quot;)</code></pre>
+</div>
+<div id="ridges-plot" class="section level2">
+<h2>Ridges Plot</h2>
+<p>The ridges plot visualises activities by time across a seven day week:</p>
+<pre class="r"><code>p6 &lt;- plot_ridges(data)
+ggsave(&quot;ridges001.png&quot;, p5, width = 20, height = 20, units = &quot;cm&quot;)</code></pre>
+</div>
+<div id="packed-circles-plot" class="section level2">
+<h2>Packed Circles Plot</h2>
+<p>Finally the packed circles plot visualises activities by distance and year:</p>
+<pre class="r"><code>p7 &lt;- plot_packed_circles(data)
+ggsave(&quot;packed_circles001.png&quot;, p6, width = 20, height = 20, units = &quot;cm&quot;)</code></pre>
+<pre><code>## Picking joint bandwidth of 2410</code></pre>
+</div>
