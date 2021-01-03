@@ -82,9 +82,8 @@ This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown pac
       <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
       
       <guid>https://eoinlarkin.github.io/bookshelf/</guid>
-      <description>Inteneded to be a list of books
-Business:
-Financial Crisis:</description>
+      <description>Business: Janesville: An American Story Barbarians At The Gate
+Tech: Bad Blood: Secrets and Lies in a Silicon Valley Startup The Hard Thing About Hard Things In the Plex: How Google Thinks, Works, and Shapes Our Lives No Filter: The Inside Story of Instagram Netflixed: The Epic Battle for America&amp;rsquo;s Eyeballs That Will Never Work: The Birth of Netflix BANKING ON IT: How I Disrupted an Industry</description>
     </item>
     
     <item>
@@ -93,7 +92,7 @@ Financial Crisis:</description>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://eoinlarkin.github.io/heatmaps/</guid>
-      <description>Facets Heatmaps </description>
+      <description>Facets Maps </description>
     </item>
     
   </channel>

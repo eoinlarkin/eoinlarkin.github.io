@@ -58,3 +58,9 @@ summaryLength = 35
   # they have to be referred from static root. Example
   #[[params.customCSS]]
   #href = "css/mystyle.css"
+  
+# This enables html content as part of the output
+# Issue is discussed here https://github.com/rstudio/blogdown/issues/465
+[markup]
+    [markup.goldmark.renderer]
+      unsafe = true
