@@ -21,8 +21,8 @@ summaryLength = 35
     url = "/bookshelf/"
 	weight = 2
 [[menu.main]]
-    name = "Exploring"
-    url = "/exploring/"
+    name = "Heatmaps"
+    url = "/heatmaps/"
 	weight = 3	
 [[menu.main]]
     name = "GitHub"
