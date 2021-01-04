@@ -1,12 +1,11 @@
 ---
-title: Test post 2
-author: Eoin
-date: '2020-12-29'
-slug: test-post-2
+title: Test1
+author: Eoin Larkin
+date: '2020-10-06'
+slug: test1
 categories: []
 tags: []
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

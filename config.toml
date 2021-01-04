@@ -1,7 +1,7 @@
 baseurl = "https://eoinlarkin.github.io/"
 publishDir = "/"
 languageCode = "en-us"
-title = "A Hugo website"
+title = "in numerus veritas"
 theme = "hugo-lithium"
 googleAnalytics = "UA-173965746-1"
 disqusShortname = ""

@@ -1,0 +1,4 @@
+# ignoring cached R Markdown files
+**/index_cache
+*.rdx
+*.rdb
