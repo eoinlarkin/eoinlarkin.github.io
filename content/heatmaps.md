@@ -4,6 +4,13 @@ author: Eoin Larkin
 date: []
 ---
 
+# Header 1
+## Header 2
+### Header 3
+#### Header 4
+##### Header 5
+###### Header 6
+
 Visualizing swim run and cycle activities
 
 # Facets

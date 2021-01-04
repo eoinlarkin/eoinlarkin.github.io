@@ -6,7 +6,16 @@
     <description>Recent content in Posts on in numerus veritas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 06 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://eoinlarkin.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 01 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://eoinlarkin.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Visualizing Strava Activities with R</title>
+      <link>https://eoinlarkin.github.io/2020/11/01/visualizing-strava-activities-with-r/</link>
+      <pubDate>Sun, 01 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://eoinlarkin.github.io/2020/11/01/visualizing-strava-activities-with-r/</guid>
+      <description>Strava is an internet service for tracking human exercise which incorporates social network features - it is sometimes referred to as “Facebook for cyclist”. Strava provides tools for analysing activities and relative performance - however there are no native Strava tools to visualise activities.</description>
+    </item>
+    
     <item>
       <title>Test1</title>
       <link>https://eoinlarkin.github.io/2020/10/06/test1/</link>

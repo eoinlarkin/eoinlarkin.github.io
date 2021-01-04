@@ -2,7 +2,7 @@
 title: Visualizing Strava Activities with R
 author: Eoin Larkin
 date: '2020-11-01'
-slug: strava-r
+slug: visualizing-strava-activities-with-r
 categories: []
 tags: []
 ---
