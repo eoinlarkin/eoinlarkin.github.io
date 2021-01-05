@@ -1,93 +1,27 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.80.0" />
+---
+title: Visualizing Strava Activities with R
+author: Eoin Larkin
+date: '2020-09-26'
+slug: visualizing-strava-activities-with-r
+categories: []
+tags: []
+---
 
-
-<title>Visualizing Strava Activities with R - in numerus veritas</title>
-<meta property="og:title" content="Visualizing Strava Activities with R - in numerus veritas">
-
-
-  <link href='https://eoinlarkin.github.io/favicon.ico' rel='icon' type='image/x-icon'/>
-
-
-
-  
-
-
-
-
-
-
-
-
-<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
-
-
-
-<link rel="stylesheet" href="/css/fonts.css" media="all">
-<link rel="stylesheet" href="/css/main.css" media="all">
-
-
-
-  </head>
-  <body>
-    <div class="wrapper">
-      <header class="header">
-        <nav class="nav">
-  <a href="/" class="nav-logo">
-    <img src="/images/logo.png"
-         width="50"
-         height="50"
-         alt="Logo">
-  </a>
-
-  <ul class="nav-links">
-    
-    <li><a href="/">Home</a></li>
-    
-    <li><a href="/bookshelf/">Bookshelf</a></li>
-    
-    <li><a href="/heatmaps/">Heatmaps</a></li>
-    
-    <li><a href="https://github.com/eoinlarkin/">GitHub</a></li>
-    
-    <li><a href="/about/">About</a></li>
-    
-  </ul>
-</nav>
-
-      </header>
-
-
-<main class="content" role="main">
-
-  <article class="article">
-    
-    <span class="article-duration">4 min read</span>
-    
-
-    <h1 class="article-title">Visualizing Strava Activities with R</h1>
-
-    
-    <span class="article-date">2020-11-01</span>
-    
-
-    <div class="article-content">
-      
 
 
 <p>Strava is an internet service for tracking human exercise which incorporates social network features - it is sometimes referred to as “Facebook for cyclist”. Strava provides tools for analysing activities and relative performance - however there are no native Strava tools to visualise activities. However the Strava library for R provides flexible and user friendly tools to visualise activities using <code>ggplot</code>.</p>
-<p>Process:
-- Bulk export data from Strava using the Strava data exporter: <a href="https://support.strava.com/hc/en-us/articles/216918437-Exporting-your-Data-and-Bulk-Export">link</a>
-- Covert exported data to gpx files with GPSBabel
-- Import data into R and use the Strava library by Marcus Volz to visualise the data: <a href="https://github.com/marcusvolz">link</a></p>
+<p>Process:</p>
+<ul>
+<li>Bulk export data from Strava using the Strava data exporter: <a href="https://support.strava.com/hc/en-us/articles/216918437-Exporting-your-Data-and-Bulk-Export">link</a><br />
+</li>
+<li>Covert exported data to gpx files with GPSBabel<br />
+</li>
+<li>Import data into R and use the Strava library by Marcus Volz to visualise the data: <a href="https://github.com/marcusvolz">link</a></li>
+</ul>
 <p>The <code>strava</code> library makes visualizing and creating heatmaps of activities super simple. Howeer, it does require the activitiy files to be in <code>gpx</code> file format. This can cause some issues as the Strava bulk export can be in multiple file formats including <code>.fit</code> and <code>.tcx</code> depending on the make and model of the device that was used to record the activitiy.</p>
-<p>Conversion of the files to the <code>gpx</code> file format is relatively straightforward; however at the time of writing the Strava output format for <code>tcx</code> files is not fully consistent with the file format specification. This issues is detailed in more detail here: <a href="https://github.com/gpsbabel/gpsbabel/issues/371">Link</a></p>
-<p>GPSBabel is very well documented and has cross platform support; it can be downloaded from here: <a href="https://www.gpsbabel.org/">Link</a></p>
-<p>Details on using GPSBabel to batch covert a set of files in Windows can be found here :<a href="https://www.gpsbabel.org/os/Windows_batch.html">Link</a></p>
+<p>Conversion of the files to the <code>gpx</code> file format is relatively straightforward; however at the time of writing the Strava output format for <code>tcx</code> files is not fully consistent with the file format specification. This issues is detailed in more detail here:<a href="https://github.com/gpsbabel/gpsbabel/issues/371">link</a></p>
+<p>GPSBabel is very well documented and has cross platform support; it can be downloaded from here:<a href="https://www.gpsbabel.org/">link</a></p>
+<p>Details on using GPSBabel to batch covert a set of files in Windows can be found here:<a href="https://www.gpsbabel.org/os/Windows_batch.html">link</a></p>
 <p>The first step is to load gpx activity files into Strava. This can be achieved by using the <code>process_data()</code> function from the <code>strava</code> package. The function converts the activity files into a single data frame which can then be easily plotted using <code>ggplot</code>.</p>
 <pre class="r"><code>library(strava) # loading the Strava package
 library(patchwork) # for aligning the plots
@@ -101,7 +35,7 @@ p1 &lt;- plot_facets(data) +
 
 # Viewing the plot
 p1</code></pre>
-<p><img src="index_files/figure-html/facets_plot-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/facets_plot-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
 <pre class="r"><code># Saving the plot file as a png
 # ggsave(&quot;facets001.png&quot;, p1, width = 10, height = 10, units = &quot;cm&quot;, dpi=1200)</code></pre>
 </div>
@@ -152,7 +86,7 @@ plot_merge &lt;- (p2 / p3 / p4) # creates a merged stacked plot
 
 # Visualizing the plot
 plot_merge</code></pre>
-<p><img src="index_files/figure-html/heatmap-1.png" width="960" /></p>
+<p><img src="index_files/figure-html/heatmap-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 <div id="activity-timeline" class="section level2">
 <h2>Activity Timeline</h2>
@@ -162,7 +96,7 @@ p5 &lt;- plot_calendar(data, unit = &quot;distance&quot;)
 
 # Visualising the plot
 p5</code></pre>
-<p><img src="index_files/figure-html/timeline_plot-1.png" width="960" /></p>
+<p><img src="index_files/figure-html/timeline_plot-1.png" width="960" style="display: block; margin: auto auto auto 0;" /></p>
 <pre class="r"><code># Saving the plot file as a png
 # ggsave(&quot;calendar001.png&quot;, p5, width = 20, height=20, units=&quot;cm&quot;)</code></pre>
 </div>
@@ -174,7 +108,7 @@ p6 &lt;- plot_ridges(data)
 
 # Visualising the plot
 p6</code></pre>
-<p><img src="index_files/figure-html/ridges_plot-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/ridges_plot-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
 <pre class="r"><code># Saving the plot file as a png
 # ggsave(&quot;ridges001.png&quot;, p6, width = 20, height = 20, units = &quot;cm&quot;)</code></pre>
 </div>
@@ -186,64 +120,7 @@ p7 &lt;- plot_packed_circles(data)
 
 # Visualising the plot
 p7</code></pre>
-<p><img src="index_files/figure-html/packed_circle_plot-1.png" width="960" /></p>
+<p><img src="index_files/figure-html/packed_circle_plot-1.png" width="960" style="display: block; margin: auto auto auto 0;" /></p>
 <pre class="r"><code># Saving the plot file as a png
 # ggsave(&quot;packed_circles001.png&quot;, p7, width = 20, height = 20, units = &quot;cm&quot;)</code></pre>
 </div>
-
-    </div>
-  </article>
-
-  
-
-
-</main>
-
-      <footer class="footer">
-        <ul class="footer-links">
-          <li>
-            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
-          </li>
-          <li>
-            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
-          </li>
-        </ul>
-      </footer>
-
-    </div>
-    
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
-<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
-
-
-
-    
-<script src="/js/math-code.js"></script>
-<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-
-    
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-173965746-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-
-  </body>
-</html>
-

@@ -1,31 +1,31 @@
 ---
 title: Visualizing Strava Activities with R
 author: Eoin Larkin
-date: '2020-11-01'
+date: '2020-09-26'
 slug: visualizing-strava-activities-with-r
 categories: []
 tags: []
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align='left')
 ```
 
 Strava is an internet service for tracking human exercise which incorporates social network features - it is sometimes referred to as "Facebook for cyclist". Strava provides tools for analysing activities and relative performance - however there are no native Strava tools to visualise activities. However the Strava library for R provides flexible and user friendly tools to visualise activities using `ggplot`.
 
 Process:
-- Bulk export data from Strava using the Strava data exporter: [link](https://support.strava.com/hc/en-us/articles/216918437-Exporting-your-Data-and-Bulk-Export)
-- Covert exported data to gpx files with GPSBabel
-- Import data into R and use the Strava library by Marcus Volz to visualise the data: [link](https://github.com/marcusvolz)
 
+* Bulk export data from Strava using the Strava data exporter: [link](https://support.strava.com/hc/en-us/articles/216918437-Exporting-your-Data-and-Bulk-Export)  
+* Covert exported data to gpx files with GPSBabel  
+* Import data into R and use the Strava library by Marcus Volz to visualise the data: [link](https://github.com/marcusvolz)  
 
 The `strava` library makes visualizing and creating heatmaps of activities super simple. Howeer, it does require the activitiy files to be in `gpx` file format. This can cause some issues as the Strava bulk export can be in multiple file formats including `.fit` and `.tcx` depending on the make and model of the device that was used to record the activitiy.
 
-Conversion of the files to the `gpx` file format is relatively straightforward; however at the time of writing the Strava output format for `tcx` files is not fully consistent with the file format specification. This issues is detailed in more detail here: [Link](https://github.com/gpsbabel/gpsbabel/issues/371) 
+Conversion of the files to the `gpx` file format is relatively straightforward; however at the time of writing the Strava output format for `tcx` files is not fully consistent with the file format specification. This issues is detailed in more detail here:[link](https://github.com/gpsbabel/gpsbabel/issues/371) 
 
-GPSBabel is very well documented and has cross platform support; it can be downloaded from here: [Link](https://www.gpsbabel.org/) 
+GPSBabel is very well documented and has cross platform support; it can be downloaded from here:[link](https://www.gpsbabel.org/) 
 
-Details on using GPSBabel to batch covert a set of files in Windows can be found here :[Link](https://www.gpsbabel.org/os/Windows_batch.html)
+Details on using GPSBabel to batch covert a set of files in Windows can be found here:[link](https://www.gpsbabel.org/os/Windows_batch.html)
 
 ```{r include=FALSE}
 # Installing the strava package
@@ -37,7 +37,7 @@ path <- "C:\\Users\\Eoin\\OneDrive\\Data Science\\Projects\\2020.12 - Strava Vis
 
 The first step is to load gpx activity files into Strava. This can be achieved by using the `process_data()` function from the `strava` package. The function converts the activity files into a single data frame which can then be easily plotted using `ggplot`.
 
-```{r preliminaries, cache=FALSE}
+```{r preliminaries, cache=TRUE}
 library(strava) # loading the Strava package
 library(patchwork) # for aligning the plots
 data <- process_data(path) # loading the activities
@@ -47,7 +47,7 @@ data <- process_data(path) # loading the activities
 
 The facets plot is the first of the plots that can be easily created using the package. Each activity file is visualised individually with a trace outline of the route of each of the activities.
 
-```{r, facets_plot}
+```{r, facets_plot, cache=TRUE}
 # Creating the plot
 p1 <- plot_facets(data) + 
   theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))
@@ -63,7 +63,7 @@ p1
 
 Next, the `plot_map` function makes creating heatmaps super simple. As part of the plotting, option latitude and longitude coordinates can be defined. As the library uses standard `ggplot` functions, additional code can be included to add titles and to modify the plot margins.
 
-```{r, heatmap, fig.width=10,fig.height=10}
+```{r, heatmap, cache=TRUE}
 # Defining our list of locations
 loc <- list(dublin=c(-6.86, -6.00, 53.03, 53.46), 
                   trieste=c(13.42, 14.28, 45.47, 45.9), 
@@ -107,14 +107,17 @@ plot_merge <- (p2 / p3 / p4) # creates a merged stacked plot
 
 
 # Visualizing the plot
-plot_merge
+p2
+p3
+
+
 ```
 
 ## Activity Timeline
 
 Activities can also be visualised in a calendar format:
 
-```{r timeline_plot, fig.width=10,fig.height=10}
+```{r timeline_plot, fig.width=10,fig.height=10, cache=TRUE}
 # Creating the timeline plot
 p5 <- plot_calendar(data, unit = "distance")
 
@@ -129,7 +132,7 @@ p5
 
 The ridges plot visualises activities by time across a seven day week:
 
-```{r ridges_plot}
+```{r ridges_plot, cache=TRUE}
 # Creating the ridges plot
 p6 <- plot_ridges(data)
 
@@ -144,7 +147,7 @@ p6
 
 Finally the packed circles plot visualises activities by distance and year:
 
-```{r packed_circle_plot, fig.width=10,fig.height=10}
+```{r packed_circle_plot, fig.width=10,fig.height=10, cache=TRUE}
 # Creating the packed circles plot
 p7 <- plot_packed_circles(data)
 

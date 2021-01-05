@@ -8,9 +8,11 @@ disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", "\\.knit\\.md$", "\\.utf8\\.md$"]
 summaryLength = 35
 
+# trying to fix slug issue
+relativeurls = true
 
 [permalinks]
-    post = "/:year/:month/:day/:slug/"
+    post = "/posts/:year/:month/:day/:slug/"
 
 [[menu.main]]
     name = "Home"
