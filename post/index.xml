@@ -36,5 +36,15 @@ When you click the Knit button a document will be generated that includes both c
 The idea is seductively simple - by analysing the data of publically available tweets is it possible to discern or extrapolate some additional analysis.</description>
     </item>
     
+    <item>
+      <title>Test Post 2</title>
+      <link>https://eoinlarkin.github.io/posts/2020/01/06/test2/</link>
+      <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://eoinlarkin.github.io/posts/2020/01/06/test2/</guid>
+      <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
+When you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.</description>
+    </item>
+    
   </channel>
 </rss>

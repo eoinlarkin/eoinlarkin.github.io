@@ -52,18 +52,18 @@ The facets plot is the first of the plots that can be easily created using the p
 p1 <- plot_facets(data) + 
   theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))
 
-# Viewing the plot
-p1
-
 # Saving the plot file as a png
 # ggsave("facets001.png", p1, width = 10, height = 10, units = "cm", dpi=1200)
+
+# Viewing the plot
+p1
 ```
 
 ## Heatmap Plot
 
 Next, the `plot_map` function makes creating heatmaps super simple. As part of the plotting, option latitude and longitude coordinates can be defined. As the library uses standard `ggplot` functions, additional code can be included to add titles and to modify the plot margins.
 
-```{r, heatmap, cache=TRUE}
+```{r, heatmap, cache=TRUE, fig.width=7,fig.height=7}
 # Defining our list of locations
 loc <- list(dublin=c(-6.86, -6.00, 53.03, 53.46), 
                   trieste=c(13.42, 14.28, 45.47, 45.9), 
@@ -107,25 +107,25 @@ plot_merge <- (p2 / p3 / p4) # creates a merged stacked plot
 
 
 # Visualizing the plot
+#p3
+#p4
 p2
-p3
-
-
 ```
 
 ## Activity Timeline
 
 Activities can also be visualised in a calendar format:
 
-```{r timeline_plot, fig.width=10,fig.height=10, cache=TRUE}
+```{r timeline_plot, fig.width = 10, fig.height=15,cache=TRUE}
 # Creating the timeline plot
 p5 <- plot_calendar(data, unit = "distance")
 
-# Visualising the plot
-p5
 
 # Saving the plot file as a png
 # ggsave("calendar001.png", p5, width = 20, height=20, units="cm")
+
+# Visualising the plot
+p5
 ```
 
 ## Ridges Plot
@@ -136,24 +136,24 @@ The ridges plot visualises activities by time across a seven day week:
 # Creating the ridges plot
 p6 <- plot_ridges(data)
 
-# Visualising the plot
-p6
-
 # Saving the plot file as a png
 # ggsave("ridges001.png", p6, width = 20, height = 20, units = "cm")
+
+# Visualising the plot
+p6
 ```
 
 ## Packed Circles Plot
 
 Finally the packed circles plot visualises activities by distance and year:
 
-```{r packed_circle_plot, fig.width=10,fig.height=10, cache=TRUE}
+```{r packed_circle_plot, fig.width=12,fig.height=10, cache=TRUE}
 # Creating the packed circles plot
 p7 <- plot_packed_circles(data)
 
-# Visualising the plot
-p7
-
 # Saving the plot file as a png
 # ggsave("packed_circles001.png", p7, width = 20, height = 20, units = "cm")
+
+# Visualising the plot
+p7
 ```

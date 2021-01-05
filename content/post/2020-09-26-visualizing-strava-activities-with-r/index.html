@@ -33,11 +33,12 @@ data &lt;- process_data(path) # loading the activities</code></pre>
 p1 &lt;- plot_facets(data) + 
   theme(plot.margin = margin(0.5,0.5,0.5,0.5, &quot;cm&quot;))
 
+# Saving the plot file as a png
+# ggsave(&quot;facets001.png&quot;, p1, width = 10, height = 10, units = &quot;cm&quot;, dpi=1200)
+
 # Viewing the plot
 p1</code></pre>
 <p><img src="index_files/figure-html/facets_plot-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
-<pre class="r"><code># Saving the plot file as a png
-# ggsave(&quot;facets001.png&quot;, p1, width = 10, height = 10, units = &quot;cm&quot;, dpi=1200)</code></pre>
 </div>
 <div id="heatmap-plot" class="section level2">
 <h2>Heatmap Plot</h2>
@@ -85,7 +86,9 @@ plot_merge &lt;- (p2 / p3 / p4) # creates a merged stacked plot
 
 
 # Visualizing the plot
-plot_merge</code></pre>
+#p3
+#p4
+p2</code></pre>
 <p><img src="index_files/figure-html/heatmap-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 <div id="activity-timeline" class="section level2">
@@ -94,11 +97,13 @@ plot_merge</code></pre>
 <pre class="r"><code># Creating the timeline plot
 p5 &lt;- plot_calendar(data, unit = &quot;distance&quot;)
 
+
+# Saving the plot file as a png
+# ggsave(&quot;calendar001.png&quot;, p5, width = 20, height=20, units=&quot;cm&quot;)
+
 # Visualising the plot
 p5</code></pre>
 <p><img src="index_files/figure-html/timeline_plot-1.png" width="960" style="display: block; margin: auto auto auto 0;" /></p>
-<pre class="r"><code># Saving the plot file as a png
-# ggsave(&quot;calendar001.png&quot;, p5, width = 20, height=20, units=&quot;cm&quot;)</code></pre>
 </div>
 <div id="ridges-plot" class="section level2">
 <h2>Ridges Plot</h2>
@@ -106,11 +111,12 @@ p5</code></pre>
 <pre class="r"><code># Creating the ridges plot
 p6 &lt;- plot_ridges(data)
 
+# Saving the plot file as a png
+# ggsave(&quot;ridges001.png&quot;, p6, width = 20, height = 20, units = &quot;cm&quot;)
+
 # Visualising the plot
 p6</code></pre>
 <p><img src="index_files/figure-html/ridges_plot-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
-<pre class="r"><code># Saving the plot file as a png
-# ggsave(&quot;ridges001.png&quot;, p6, width = 20, height = 20, units = &quot;cm&quot;)</code></pre>
 </div>
 <div id="packed-circles-plot" class="section level2">
 <h2>Packed Circles Plot</h2>
@@ -118,9 +124,10 @@ p6</code></pre>
 <pre class="r"><code># Creating the packed circles plot
 p7 &lt;- plot_packed_circles(data)
 
+# Saving the plot file as a png
+# ggsave(&quot;packed_circles001.png&quot;, p7, width = 20, height = 20, units = &quot;cm&quot;)
+
 # Visualising the plot
 p7</code></pre>
-<p><img src="index_files/figure-html/packed_circle_plot-1.png" width="960" style="display: block; margin: auto auto auto 0;" /></p>
-<pre class="r"><code># Saving the plot file as a png
-# ggsave(&quot;packed_circles001.png&quot;, p7, width = 20, height = 20, units = &quot;cm&quot;)</code></pre>
+<p><img src="index_files/figure-html/packed_circle_plot-1.png" width="1152" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
