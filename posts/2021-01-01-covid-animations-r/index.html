@@ -6,8 +6,8 @@
 <meta name="generator" content="Hugo 0.80.0" />
 
 
-<title>Visualizing Covid data using animated graphs - in numerus veritas</title>
-<meta property="og:title" content="Visualizing Covid data using animated graphs - in numerus veritas">
+<title>Visualizing Covid data using animated graphs - Plots &amp; Numbers</title>
+<meta property="og:title" content="Visualizing Covid data using animated graphs - Plots &amp; Numbers">
 
 
   <link href='https://eoinlarkin.github.io/favicon.ico' rel='icon' type='image/x-icon'/>
@@ -66,7 +66,7 @@
 
   <article class="article">
     
-    <span class="article-duration">2 min read</span>
+    <span class="article-duration">4 min read</span>
     
 
     <h1 class="article-title">Visualizing Covid data using animated graphs</h1>
@@ -160,6 +160,81 @@ ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
 
 # Saving the plot output
 anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)</code></pre>
+<p>Following code creates the map plot :</p>
+</div>
+</div>
+<div id="animated-plot-by-county" class="section level1">
+<h1>Animated Plot by County</h1>
+<div id="importing-covid-data-1" class="section level2">
+<h2>Importing Covid Data</h2>
+<p>The first step is to import the data using the <code>covid</code> package:</p>
+<pre><code>## We have invested a lot of time and effort in creating COVID-19 Data Hub, please cite the following when using it:
+## 
+##   Guidotti, E., Ardia, D., (2020), &quot;COVID-19 Data Hub&quot;, Journal of Open
+##   Source Software 5(51):2376, doi: 10.21105/joss.02376.
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Article{,
+##     title = {COVID-19 Data Hub},
+##     year = {2020},
+##     doi = {10.21105/joss.02376},
+##     author = {Emanuele Guidotti and David Ardia},
+##     journal = {Journal of Open Source Software},
+##     volume = {5},
+##     number = {51},
+##     pages = {2376},
+##   }
+## 
+## To retrieve citation and metadata of the data sources see ?covid19cite. To hide this message use &#39;verbose = FALSE&#39;.</code></pre>
+</div>
+<div id="creating-the-shapefiles-for-plotting" class="section level2">
+<h2>Creating the shapefiles for Plotting</h2>
+<pre class="r"><code>spdf &lt;- readOGR(file.path(path,&quot;./data&quot;), layer = &quot;counties&quot;)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;C:\Users\Eoin\OneDrive\Data Science\Projects\2020.12 - Covid Interactive Graphs\data&quot;, layer: &quot;counties&quot;
+## with 32 features
+## It has 15 fields</code></pre>
+<pre class="r"><code>spdf@data$id &lt;- rownames(spdf@data)
+
+county_ids &lt;- as.data.frame(cbind(id = spdf@data$id, region = spdf@data$NAME_TAG))
+
+spdf &lt;- gSimplify(spdf, tol=0.01, topologyPreserve = TRUE)
+spdf.df &lt;- fortify(spdf)
+spdf.df &lt;- inner_join(spdf.df, county_ids, by=&quot;id&quot;)</code></pre>
+</div>
+<div id="merging-the-shapefile-with-covid-data" class="section level2">
+<h2>Merging the Shapefile with Covid Data</h2>
+<pre class="r"><code>spdf.df &lt;- inner_join(spdf.df, ire_byregion, by=&quot;region&quot;)
+
+# dropping unnecessary columns
+drops &lt;- c(&quot;hole&quot;, &quot;piece&quot;, &quot;id.x&quot;, &quot;id.y&quot;)
+
+ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pre>
+</div>
+<div id="plot-shapefile-data" class="section level2">
+<h2>Plot Shapefile data</h2>
+<pre class="r"><code>baselayer &lt;-  spdf.df %&gt;%
+              # filter(date &gt;= &#39;2020-12-01&#39;) %&gt;%
+              tidyr::drop_na() %&gt;%
+              ggplot(.) + 
+                      aes(long, lat, group=group) +
+                      geom_polygon(colour=&quot;grey&quot;)
+
+plot &lt;-   baselayer + 
+          aes(fill=(confirmed_7day_per_1000)) +
+          labs(x=NULL, y=NULL) +
+          coord_map(&quot;gilbert&quot;) +
+          scale_fill_distiller(palette = &#39;YlOrRd&#39;, direction=1, guide=&#39;colorbar&#39;) + 
+          guides(fill = guide_colourbar(title=&#39;Cases per 1000&#39;, barwidth = 0.5, barheight = 10)) +
+          theme(panel.border = element_blank(),
+                panel.background = element_blank(),
+                axis.ticks = element_blank(),
+                axis.text = element_blank()) + 
+          labs(title=&quot;Number of New Daily Cases - 7 Day Rolling Average&quot;) </code></pre>
+<pre class="r"><code>anim &lt;- plot + transition_time(date) + labs(subtitle = &quot;Date: {frame_time}&quot;)
+plot_output &lt;- animate(anim, nframes = 200, renderer = gifski_renderer(loop = T))
+anim_save(&quot;choropleth_covid_ire.gif&quot;, plot_output)</code></pre>
 </div>
 </div>
 
