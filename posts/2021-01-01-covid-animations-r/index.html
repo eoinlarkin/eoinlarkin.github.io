@@ -66,7 +66,7 @@
 
   <article class="article">
     
-    <span class="article-duration">1 min read</span>
+    <span class="article-duration">2 min read</span>
     
 
     <h1 class="article-title">Visualizing Covid data using animated graphs</h1>
@@ -82,38 +82,84 @@
 <div id="animated-coivd-graphs" class="section level2">
 <h2>Animated Coivd Graphs</h2>
 <p>Although it was a bad year for the world it was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable.</p>
-<p>More text text here</p>
-<p>Test post</p>
-<p>tt
-dd</p>
-<p>Trying to insert an image again:</p>
-<p><img src="../../post/2021-01-01-covid-animations-r/packed_circles001.png" /></p>
+<p>The following animated plots visualise the time series for the number of cases in the Republic if Ireland over 2020 as well as the development of the 7 day incidence rate on a per county basis.</p>
 <p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
-<p>Test</p>
-<p>Test</p>
-<p>Test 3</p>
-<p>Introduction to plotting with some examples
-XX
-XX
-xx
-XX
-XX
-XX
-XX</p>
-<p>The following graph plots the daily total cases s:</p>
+<div class="figure">
+<img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" alt="" />
+<p class="caption">choropleth-ireland-covid-counties</p>
 </div>
-<div id="r-markdown" class="section level2">
-<h2>R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
+<p>The code to generate these graphs is as follows:</p>
+</div>
+<div id="loading-requried-packages" class="section level2">
+<h2>Loading Requried packages</h2>
+<p>The following packages are loaded:</p>
+<pre class="r"><code>library(COVID19)
+library(ggplot2)
+library(dplyr)
+library(rgeos)
+library(maptools)
+library(rgdal)
+library(gganimate)
+library(sf)
+library(zoo)</code></pre>
+</div>
+<div id="animated-line-graph" class="section level1">
+<h1>Animated Line Graph</h1>
+<div id="importing-covid-data" class="section level2">
+<h2>Importing Covid Data</h2>
+<p>The following code imports the Covid-19 dataset for Ireland on a country level basis (<code>level=1</code> option)</p>
+<pre class="r"><code>ire_agg &lt;- covid19(country=&#39;IE&#39;,
+                        level=1,
+                        start=&#39;2020-02-22&#39;,
+                        end=&#39;2020-12-31&#39;,
+                        raw=FALSE,
+                        verbose=FALSE)
+
+# A new column to calculate daily delta in confirmed cases
+ire_agg %&lt;&gt;%
+            arrange(id, date) %&gt;%
+            group_by(id) %&gt;%
+            dplyr::mutate(confirmed_delta = confirmed - lag(confirmed, default = first(confirmed)))
+
+
+# Calculating the rolling 7 day average
+ ire_agg %&lt;&gt;%
+    group_by(id) %&gt;%
+    arrange(date) %&gt;% 
+    dplyr::mutate(confirmed_7day = zoo::rollmean(confirmed_delta, k = 7, fill = NA, align=&#39;right&#39;)) %&gt;%
+    dplyr::ungroup()
+
+# calculating cases per 1000 population
+ire_agg$cases_per_1000 &lt;- 1000 * (ire_agg$confirmed_delta / ire_agg$population)
+ire_agg$confirmed_7day_per_1000 &lt;- 1000 * (ire_agg$confirmed_7day / ire_agg$population)
+ 
+# dropping unnecessary columns
+drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &quot;deaths&quot;, &quot;hosp&quot;, &quot;vent&quot;, &quot;icu&quot;, &quot;school_closing&quot;, 
+           &quot;workplace_closing&quot;, &quot;cancel_events&quot;, &quot;gatherings_restrictions&quot;, &quot;transport_closing&quot;,
+           &quot;stay_home_restrictions&quot;, &quot;internal_movement_restrictions&quot;, &quot;international_movement_restrictions&quot;,
+            &quot;information_campaigns&quot;, &quot;testing_policy&quot;, &quot;contact_tracing&quot;,                     
+            &quot;stringency_index&quot;, &quot;iso_alpha_3&quot;, &quot;iso_alpha_2&quot;, &quot;iso_numeric&quot;,
+           &quot;currency&quot;, &quot;administrative_area_level&quot;, &quot;administrative_area_level_3&quot;, &quot;latitude&quot;,
+           &quot;longitude&quot;, &quot;key&quot;, &quot;key_google_mobility&quot;, &quot;key_apple_mobility&quot;, &quot;key_numeric&quot;, &quot;key_alpha_2&quot;  )
+
+ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
+<p>The following code then generates the animated plot :</p>
+<pre class="r"><code>line_plot &lt;- ire_agg %&gt;%
+              ggplot(aes(x=date, y=confirmed_delta)) +
+              geom_line(color=&#39;red4&#39;, size=0.5) +
+              geom_point(size = 1, color=&#39;red4&#39;) + 
+              theme(legend.position=&quot;bottom&quot;, plot.margin=margin(5.5, 60, 5.5, 5.5)) + #increasing margin
+              scale_color_viridis_d(name=&quot;Method of Discovery&quot;) +
+              labs(title = &quot;Number of Positive Cases by Day&quot;) +
+              ylab(&quot;Number of Daily Cases&quot;) +
+              xlab(&quot;Date&quot;) +
+              transition_reveal(date)
+
+line_plot_animation &lt;- animate(line_plot, renderer = gifski_renderer(loop = T))
+
+# Saving the plot output
+#anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)</code></pre>
+</div>
 </div>
 
     </div>
@@ -151,6 +197,9 @@ XX</p>
 
 
     
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 
     
 <script type="application/javascript">
