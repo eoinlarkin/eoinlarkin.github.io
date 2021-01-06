@@ -18,13 +18,13 @@ R provides a very flexible way to create animated plots using a combination of t
     </item>
     
     <item>
-      <title>Test1</title>
-      <link>https://eoinlarkin.github.io/posts/2020-10-06-test1/</link>
+      <title>Introduction to Network Analysis with R</title>
+      <link>https://eoinlarkin.github.io/posts/2020-10-06-network-analysis-intro/</link>
       <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://eoinlarkin.github.io/posts/2020-10-06-test1/</guid>
-      <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-When you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.</description>
+      <guid>https://eoinlarkin.github.io/posts/2020-10-06-network-analysis-intro/</guid>
+      <description>What is network analysis???
+Code# Initial packages loaded# Tidyverse loaded to facilitate manipulation of outputslibrary(knitr)library(igraph)library(dplyr)library(scales)library(ggplot2)library(tidyverse)# Loading the datasetdataset &amp;lt;- load(file.path(path, &amp;quot;dataset.RData&amp;quot;))# Converting the data to graphs in igraph formatx_graph &amp;lt;- graph.</description>
     </item>
     
     <item>
