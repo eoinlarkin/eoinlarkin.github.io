@@ -66,7 +66,7 @@
 
   <article class="article">
     
-    <span class="article-duration">2 min read</span>
+    <span class="article-duration">3 min read</span>
     
 
     <h1 class="article-title">Sentiment Analysis of Tweets to Irish Banks</h1>
@@ -77,7 +77,6 @@
 
     <div class="article-content">
       
-<script src="index_files/header-attrs/header-attrs.js"></script>
 
 
 <p>Analysing sentiment based on a text string is pretty classic introductory problem in the field of Machine Learning.</p>
@@ -133,6 +132,24 @@
 </tr>
 </tbody>
 </table>
+<pre class="r"><code># Converting the date into weekly blocks
+boi_timeline$date_week &lt;- data.frame(floor_date(as.Date(boi_timeline$created_at), unit = &quot;week&quot;))
+names(boi_timeline$date_week) = &quot;date_week&quot;
+
+aib_timeline$date_week &lt;- data.frame(floor_date(as.Date(aib_timeline$created_at), unit = &quot;week&quot;))
+names(aib_timeline$date_week) = &quot;date_week&quot;
+
+boi_by_week &lt;- as_tibble(boi_timeline$date_week) %&gt;%
+  filter(date_week &gt;= &#39;2019-07-14&#39; &amp; date_week &lt;= &#39;2019-10-13&#39;) %&gt;%
+  group_by(date_week) %&gt;%
+  summarise(cnt = n()) %&gt;%
+  mutate(account = &#39;@bankofireland&#39;)
+
+aib_by_week &lt;- as_tibble(aib_timeline$date_week) %&gt;%
+  filter(date_week &gt;= &#39;2019-07-14&#39; &amp; date_week &lt;= &#39;2019-10-13&#39;) %&gt;%
+  group_by(date_week) %&gt;%
+  summarise(cnt = n()) %&gt;%
+  mutate(account = &#39;@aibireland&#39;)</code></pre>
 <pre class="r"><code># ***************************************************
 # Plotting AIB / BOI Output over a four month window
 # ***************************************************
@@ -144,10 +161,44 @@ ggplot(rbind(aib_by_week, boi_by_week), aes(x=as.Date(date_week), y=cnt, fill= a
   scale_x_date(breaks = &#39;1 weeks&#39;, date_labels = &quot;%b-%d&quot;) +
   ggtitle(&quot;Tweet Activity per Week&quot;) + 
   scale_fill_manual(&quot;Account&quot;, values = c(&quot;@aibireland&quot; = &quot;mediumpurple4&quot;, &quot;@bankofireland&quot; = &quot;dodgerblue4&quot;)) +
-  theme(axis.text.x = element_text(angle = 45, hjust=1)) 
-
-# Saving output of ggplot
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) </code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># Saving output of ggplot
 # ggsave(&quot;tweet_activity_per_week.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)</code></pre>
+<pre class="r"><code># ***************************************************
+# Device analysis - last 30 days - Main Accounts
+# ***************************************************
+
+
+tweets_30day_boi_source &lt;- as_tibble(tweets_30day_boi$source) %&gt;%
+  group_by(value) %&gt;%
+  summarise(cnt = n()) %&gt;%
+  mutate(perc = cnt / sum(cnt)) %&gt;%
+  filter(perc &gt;= 0.01) %&gt;%
+  mutate(account = &#39;@bankofireland&#39;)
+
+tweets_30day_aib_source &lt;- as_tibble(tweets_30day_aib$source) %&gt;%
+  group_by(value) %&gt;%
+  summarise(cnt = n()) %&gt;%
+  mutate(perc = cnt / sum(cnt)) %&gt;%
+  filter(perc &gt;= 0.01) %&gt;%
+  mutate(account = &#39;@aibireland&#39;)
+
+plot_devices &lt;- ggplot(rbind(tweets_30day_aib_source, tweets_30day_boi_source), 
+                       aes(x=value, y=perc, fill=account)) +
+                geom_bar(stat=&quot;identity&quot;, position=&quot;dodge&quot;, color=&#39;white&#39;)+
+                labs(x=&quot;Application&quot;, y=&quot;% of all Tweets&quot;) +
+                scale_y_continuous(labels = scales::percent) +
+                ggtitle(&quot;Last 30 Days - Application used by individuals tweeting to account&quot;) + 
+                scale_fill_manual(&quot;Account&quot;, 
+                                  values = c(&quot;@aibireland&quot; = &quot;mediumpurple4&quot;, &quot;@bankofireland&quot; = &quot;dodgerblue4&quot;)) +
+                theme(axis.text.x = element_text(angle = 45, hjust=1)) 
+
+## Saving plot
+#ggsave(&quot;device_used_for_tweets.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)
+
+# Visualise plot 
+plot_devices </code></pre>
 </div>
 
     </div>
@@ -185,6 +236,9 @@ ggplot(rbind(aib_by_week, boi_by_week), aes(x=as.Date(date_week), y=cnt, fill= a
 
 
     
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 
     
 <script type="application/javascript">

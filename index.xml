@@ -13,8 +13,8 @@
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://eoinlarkin.github.io/posts/2021-01-01-covid-animations-r/</guid>
-      <description>Animated Coivd GraphsAlthough it was a bad year for the world it was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable.
-The following animated plots visualise the time series for the number of cases in the Republic if Ireland over 2020 as well as the development of the 7 day incidence rate on a per county basis.</description>
+      <description>Animated Coivd GraphsAlthough it was a bad year for the world, 2020 was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable.
+R provides a very flexible way to create animated plots using a combination of the ggplot2 and the gganimate package.</description>
     </item>
     
     <item>
@@ -73,8 +73,7 @@ A mixture of pretty plots and statistical analysis. Just for fun.</description>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://eoinlarkin.github.io/heatmaps/</guid>
-      <description>Visualizing swim, run and cycle activities
-Facets Trieste Dublin Galway </description>
+      <description>Visualizing run and cycle activities. Trieste Dublin Galway </description>
     </item>
     
   </channel>

@@ -81,14 +81,12 @@
 
 <div id="animated-coivd-graphs" class="section level2">
 <h2>Animated Coivd Graphs</h2>
-<p>Although it was a bad year for the world it was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable.</p>
+<p>Although it was a bad year for the world, 2020 was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable.</p>
+<p>R provides a very flexible way to create animated plots using a combination of the <code>ggplot2</code> and the <code>gganimate</code> package.</p>
 <p>The following animated plots visualise the time series for the number of cases in the Republic if Ireland over 2020 as well as the development of the 7 day incidence rate on a per county basis.</p>
 <p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
-<div class="figure">
-<img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" alt="" />
-<p class="caption">choropleth-ireland-covid-counties</p>
-</div>
-<p>The code to generate these graphs is as follows:</p>
+<p><img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" /></p>
+<p>In order to generate the plots, the following code was used:</p>
 </div>
 <div id="loading-requried-packages" class="section level2">
 <h2>Loading Requried packages</h2>
@@ -143,7 +141,7 @@ drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &qu
            &quot;longitude&quot;, &quot;key&quot;, &quot;key_google_mobility&quot;, &quot;key_apple_mobility&quot;, &quot;key_numeric&quot;, &quot;key_alpha_2&quot;  )
 
 ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
-<p>The following code then generates the animated plot :</p>
+<p>The following code produces the base plot that will form the basis of the visualisation:</p>
 <pre class="r"><code>line_plot &lt;- ire_agg %&gt;%
               ggplot(aes(x=date, y=confirmed_delta)) +
               geom_line(color=&#39;red4&#39;, size=0.5) +
@@ -153,12 +151,15 @@ ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
               labs(title = &quot;Number of Positive Cases by Day&quot;) +
               ylab(&quot;Number of Daily Cases&quot;) +
               xlab(&quot;Date&quot;) +
-              transition_reveal(date)
-
-line_plot_animation &lt;- animate(line_plot, renderer = gifski_renderer(loop = T))
+              transition_reveal(date)</code></pre>
+<p>The following code then generates the animated plot :</p>
+<pre class="r"><code>line_plot_animation &lt;- animate(line_plot, 
+                               renderer = gifski_renderer(loop = T),
+                               height=350,
+                               width=700)
 
 # Saving the plot output
-#anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)</code></pre>
+anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)</code></pre>
 </div>
 </div>
 
