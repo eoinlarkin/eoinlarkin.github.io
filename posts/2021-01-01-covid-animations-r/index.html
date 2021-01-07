@@ -66,7 +66,7 @@
 
   <article class="article">
     
-    <span class="article-duration">4 min read</span>
+    <span class="article-duration">5 min read</span>
     
 
     <h1 class="article-title">Visualizing Covid data using animated graphs</h1>
@@ -81,12 +81,13 @@
 
 <div id="animated-coivd-graphs" class="section level2">
 <h2>Animated Coivd Graphs</h2>
-<p>Although it was a bad year for the world, 2020 was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable.</p>
+<p>Although it was a bad year for the world, 2020 was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable. Some great examples can be seen <a href="https://fivethirtyeight.com/features/the-40-weirdest-and-best-charts-we-made-in-2020/" title="FiveThirtyEight">here</a> and <a href="https://www.ft.com/content/4b82956b-0155-4781-b40e-951c32a95f75" title="Financial Times">here</a></p>
 <p>R provides a very flexible way to create animated plots using a combination of the <code>ggplot2</code> and the <code>gganimate</code> package.</p>
-<p>The following animated plots visualise the time series for the number of cases in the Republic if Ireland over 2020 as well as the development of the 7 day incidence rate on a per county basis.</p>
+<p>The following animated plots leverage data from the <a href="https://covid19datahub.io/index.html">Covid19 Data Hub</a> to created animated visualisations of the Covid-19 incidence rates in Ireland.</p>
+<p>The first plots visualise the time series for the number of cases in the Republic if Ireland over 2020 while the second tracks the 7 day incidence rate on a per county basis.</p>
 <p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
 <p><img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" /></p>
-<p>In order to generate the plots, the following code was used:</p>
+<p>Although the code to generate the plots looks complex, it’s actually relatively straight forward to animate them - the real work is in summarizing the data and laying out the plots in the correct format.</p>
 </div>
 <div id="loading-requried-packages" class="section level2">
 <h2>Loading Requried packages</h2>
@@ -105,7 +106,13 @@ library(zoo)</code></pre>
 <h1>Animated Line Graph</h1>
 <div id="importing-covid-data" class="section level2">
 <h2>Importing Covid Data</h2>
-<p>The following code imports the Covid-19 dataset for Ireland on a country level basis (<code>level=1</code> option)</p>
+<p>The following code imports the Covid-19 dataset for Ireland on a country level basis (<code>level=1</code> option). In addition to importing the data, I’ve added code to include some additional metrics :</p>
+<ul>
+<li>The daily number of confirmed cases (the dataset provides the cumulative cases)</li>
+<li>The number of confirmed cases per 1,000 people</li>
+<li>The rolling seven day average for the number of confirmed cases</li>
+</ul>
+<p>Once the required data fields have been added, I have removed unnecessary fields from the data source. This is an optional step, but having a smaller dataframe will decrease the processing time required to create the animated plot.</p>
 <pre class="r"><code>ire_agg &lt;- covid19(country=&#39;IE&#39;,
                         level=1,
                         start=&#39;2020-02-22&#39;,
@@ -141,7 +148,7 @@ drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &qu
            &quot;longitude&quot;, &quot;key&quot;, &quot;key_google_mobility&quot;, &quot;key_apple_mobility&quot;, &quot;key_numeric&quot;, &quot;key_alpha_2&quot;  )
 
 ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
-<p>The following code produces the base plot that will form the basis of the visualisation:</p>
+<p>Once, we have created the base data, the following code produces the plot that will form the basis of the visualisation:</p>
 <pre class="r"><code>line_plot &lt;- ire_agg %&gt;%
               ggplot(aes(x=date, y=confirmed_delta)) +
               geom_line(color=&#39;red4&#39;, size=0.5) +
@@ -150,21 +157,25 @@ ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
               scale_color_viridis_d(name=&quot;Method of Discovery&quot;) +
               labs(title = &quot;Number of Positive Cases by Day&quot;) +
               ylab(&quot;Number of Daily Cases&quot;) +
-              xlab(&quot;Date&quot;) +
-              transition_reveal(date)</code></pre>
-<p>The following code then generates the animated plot :</p>
-<pre class="r"><code>line_plot_animation &lt;- animate(line_plot, 
+              xlab(&quot;Date&quot;)
+
+# Viewing the plot
+line_plot</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>The following code then takes the base plot and animates it over time. In order to animate the plot the <code>gganimate</code> package is used. The code <code>transition_reveal(date)</code> tells R to use the <code>date</code> field as the basis of our plot animation.</p>
+<pre class="r"><code>line_plot_animation &lt;- animate(line_plot + transition_reveal(date),
                                renderer = gifski_renderer(loop = T),
                                height=350,
                                width=700)
 
 # Saving the plot output
 anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)</code></pre>
-<p>Following code creates the map plot :</p>
+<p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
 </div>
 </div>
 <div id="animated-plot-by-county" class="section level1">
 <h1>Animated Plot by County</h1>
+<p>The animated plot is a little more tricky as we need to import both data on the Covid-19 incidence rate on a per county basis as well as creating a map of Ireland with county borders. In order to create the county borders we need to import <em>shape files</em> that mark the shape of each county for plotting on our map.</p>
 <div id="importing-covid-data-1" class="section level2">
 <h2>Importing Covid Data</h2>
 <p>The first step is to import the data using the <code>covid</code> package:</p>

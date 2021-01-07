@@ -13,8 +13,7 @@
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://eoinlarkin.github.io/posts/2021-01-01-covid-animations-r/</guid>
-      <description>Animated Coivd GraphsAlthough it was a bad year for the world, 2020 was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable.
-R provides a very flexible way to create animated plots using a combination of the ggplot2 and the gganimate package.</description>
+      <description>Animated Coivd GraphsAlthough it was a bad year for the world, 2020 was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable. Some great examples can be seen here and here</description>
     </item>
     
     <item>
