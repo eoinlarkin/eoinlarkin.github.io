@@ -179,34 +179,49 @@ anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)</code></pre>
 <div id="importing-covid-data-1" class="section level2">
 <h2>Importing Covid Data</h2>
 <p>The first step is to import the data using the <code>covid</code> package:</p>
-<pre><code>## We have invested a lot of time and effort in creating COVID-19 Data Hub, please cite the following when using it:
-## 
-##   Guidotti, E., Ardia, D., (2020), &quot;COVID-19 Data Hub&quot;, Journal of Open
-##   Source Software 5(51):2376, doi: 10.21105/joss.02376.
-## 
-## A BibTeX entry for LaTeX users is
-## 
-##   @Article{,
-##     title = {COVID-19 Data Hub},
-##     year = {2020},
-##     doi = {10.21105/joss.02376},
-##     author = {Emanuele Guidotti and David Ardia},
-##     journal = {Journal of Open Source Software},
-##     volume = {5},
-##     number = {51},
-##     pages = {2376},
-##   }
-## 
-## To retrieve citation and metadata of the data sources see ?covid19cite. To hide this message use &#39;verbose = FALSE&#39;.</code></pre>
+<pre class="r"><code>ire_byregion &lt;- covid19(country=&#39;IE&#39;,
+                        level=2,
+                        start=&#39;2020-02-22&#39;,
+                        end=&#39;2020-12-31&#39;,
+                        raw=FALSE,
+                        verbose=FALSE)
+
+# A new column region is added to the dataset in order to allow mapping by region
+ire_byregion$region &lt;- ire_byregion$administrative_area_level_2
+
+# A new column to calculate daily delta in confirmed cases
+ire_byregion %&lt;&gt;%
+            arrange(id, date) %&gt;%
+            group_by(id) %&gt;%
+            dplyr::mutate(confirmed_delta = confirmed - lag(confirmed, default = first(confirmed)))
+
+
+# Calculating the rolling 7 day average
+ ire_byregion %&lt;&gt;%
+    group_by(id) %&gt;%
+    arrange(date) %&gt;% 
+    dplyr::mutate(confirmed_7day = zoo::rollmean(confirmed_delta, k = 7, fill = NA, align=&#39;right&#39;)) %&gt;%
+    dplyr::ungroup()
+
+# calculating cases per 1000 population
+ire_byregion$cases_per_1000 &lt;- 1000 * (ire_byregion$confirmed_delta / ire_byregion$population)
+ire_byregion$confirmed_7day_per_1000 &lt;- 1000 * (ire_byregion$confirmed_7day / ire_byregion$population)
+ 
+# dropping unnecessary columns
+drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &quot;deaths&quot;, &quot;hosp&quot;, &quot;vent&quot;, &quot;icu&quot;, &quot;school_closing&quot;, 
+           &quot;workplace_closing&quot;, &quot;cancel_events&quot;, &quot;gatherings_restrictions&quot;, &quot;transport_closing&quot;,
+           &quot;stay_home_restrictions&quot;, &quot;internal_movement_restrictions&quot;, &quot;international_movement_restrictions&quot;,
+            &quot;information_campaigns&quot;, &quot;testing_policy&quot;, &quot;contact_tracing&quot;,                     
+            &quot;stringency_index&quot;, &quot;iso_alpha_3&quot;, &quot;iso_alpha_2&quot;, &quot;iso_numeric&quot;,
+           &quot;currency&quot;, &quot;administrative_area_level&quot;, &quot;administrative_area_level_3&quot;, &quot;latitude&quot;,
+           &quot;longitude&quot;, &quot;key&quot;, &quot;key_google_mobility&quot;, &quot;key_apple_mobility&quot;, &quot;key_numeric&quot;, &quot;key_alpha_2&quot;  )
+
+ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pre>
 </div>
 <div id="creating-the-shapefiles-for-plotting" class="section level2">
 <h2>Creating the shapefiles for Plotting</h2>
-<pre class="r"><code>spdf &lt;- readOGR(file.path(path,&quot;./data&quot;), layer = &quot;counties&quot;)</code></pre>
-<pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;C:\Users\Eoin\OneDrive\Data Science\Projects\2020.12 - Covid Interactive Graphs\data&quot;, layer: &quot;counties&quot;
-## with 32 features
-## It has 15 fields</code></pre>
-<pre class="r"><code>spdf@data$id &lt;- rownames(spdf@data)
+<pre class="r"><code>spdf &lt;- readOGR(file.path(path,&quot;./data&quot;), layer = &quot;counties&quot;, verbose=FALSE)
+spdf@data$id &lt;- rownames(spdf@data)
 
 county_ids &lt;- as.data.frame(cbind(id = spdf@data$id, region = spdf@data$NAME_TAG))
 
