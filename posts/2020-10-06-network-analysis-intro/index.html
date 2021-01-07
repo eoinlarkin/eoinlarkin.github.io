@@ -104,8 +104,9 @@ dataset &lt;- load(file.path(path, &quot;dataset.RData&quot;))
 x_graph &lt;- graph.adjacency(X, mode=&quot;undirected&quot;)
 y_graph &lt;- graph.adjacency(Y, mode=&quot;undirected&quot;, weighted=TRUE)</code></pre>
 </div>
-<div id="question-01-network-degrees" class="section level2">
-<h2>Question 01: Network Degrees</h2>
+<div id="network-degrees" class="section level1">
+<h1>Network Degrees</h1>
+<p>In Network analysis, the degree of a node in a network is the number of connections it has to other nodes and the degree distribution is the probability distribution of these degrees over the whole network.</p>
 <p>Having imported the graph, the degrees were calculated using the <code>degree</code> and <code>strength</code> function for the graphs derived from the <code>X</code> and <code>Y</code> adjacency matrices.</p>
 <p>As <code>Y</code> is an interaction matrix, it corresponds to a weighted network and the <code>strength</code> function is used to calculate the degree of the nodes.</p>
 <pre class="r"><code># Calculating the degrees
@@ -123,9 +124,8 @@ vex_deg_top5 &lt;- V(x_graph)[match(deg_x_top5, deg_x)]
 vex_top5_wgt_deg &lt;- deg_y[match(deg_x_top5, deg_x)]</code></pre>
 <p><strong>5 Nodes with Highest Binary Degree:</strong> 51, 272, 195, 195, 161</p>
 <p><strong>Weighted degree of the 5 Nodes with Highest Binary Degree:</strong> 267, 123, 294, 294, 146</p>
-</div>
-<div id="question-02-network-visualisation" class="section level2">
-<h2>Question 02: Network Visualisation</h2>
+<div id="network-visualisation" class="section level2">
+<h2>Network Visualisation</h2>
 <p>The following plot provides a visual representation of the network <code>X</code> where the size of the nodes is proportional to the weighted degree, and the coordinates are coloured according to <code>time_frame</code>.</p>
 <pre class="r"><code>plot(x_graph,
      layout = layout,
@@ -140,8 +140,9 @@ legend(&quot;bottomright&quot;, legend=c(&quot;Time Frame 1&quot;, &quot;Time Fr
        col=categorical_pal(8), pch=16, cex=1, bty=&quot;n&quot;)</code></pre>
 <p><img src="index_files/figure-html/question_02-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
-<div id="question-05-centrality-measures" class="section level2">
-<h2>Question 05: Centrality Measures</h2>
+<div id="centrality-measures" class="section level2">
+<h2>Centrality Measures</h2>
+<p>Centrality allows us to identify the most important vertices (or nodes) within a graph. Applications include identifying the most influential person in a social network, key infrastructure nodes in the Internet or urban networks, and super-spreaders of disease</p>
 <pre class="r"><code># Page Rank Centrality
 x_page_rank &lt;- page_rank(x_graph)$vector # Page-Rank centrality
 x_page_rank_top5 &lt;- V(x_graph)[order(x_page_rank, decreasing = T)[1:5]]
@@ -150,9 +151,7 @@ x_page_rank_top5 &lt;- V(x_graph)[order(x_page_rank, decreasing = T)[1:5]]
 x_between_centr &lt;- centr_betw(x_graph)$res # betweenness centrality
 x_between_centr_top5 &lt;- V(x_graph)[order(x_between_centr,decreasing = T)[1:5]]</code></pre>
 <ul>
-<li><em>Page Rank Centrality - Top 5 Scores:</em> 0.0087931, 0.0079697, 0.0058721, 0.0057151, 0.0057093</li>
 <li><em>Page Rank Centrality - Top 5 Nodes:</em> 51, 272, 235, 50, 195</li>
-<li><em>Betweenness Centrality - Top 5 Scores:</em> 2.213394210^{4}, 1.683789110^{4}, 1.66315810^{4}, 9587.8048114, 6263.4480562</li>
 <li><em>Betweenness Centrality - Top 5 Nodes:</em> 188, 272, 51, 230, 50</li>
 </ul>
 <p>The following plot illustrates the network with node sizes proportional to Page-Rank and highlights with a different colour the nodes that are in the top 10 according to both centralities.</p>
@@ -189,8 +188,9 @@ legend(&quot;bottomright&quot;, legend=c(&quot;Vertices&quot;, &quot;Top 10 Betw
 <li>1 is in time step 3</li>
 </ul>
 </div>
-<div id="question-09-simulation-study-i" class="section level2">
-<h2>Question 09: Simulation Study I</h2>
+<div id="simulation-study" class="section level2">
+<h2>Simulation Study</h2>
+<p>The purpose of this simulation study is to randomly remove nodes from the network and see how the network repsonds.</p>
 <pre class="r"><code>set.seed(1)
 n_nodes_to_remove &lt;- 200 # number of nodes that we are removing from the network
 
@@ -254,6 +254,7 @@ plot_sim(store_graph_metrics,
 <li><em>Clustering Coefficient:</em> This metric also decreases as nodes are gradually removed from the network. This behaviour is as expected, given the network contains a small number of highly connected nodes. However the trend is not strictly downwards, with some increases in the coefficient noted. As the clustering coefficient is a function of the nodes in the network and nodes are removed from the network at random it is not unexpected that this value can increase as nodes are removed.</li>
 <li><em>Network Modularity:</em> The modularity is a measure of how clustered the network is. As nodes are removed at random, this measure both increases and decreases and does not strictly decrease.</li>
 </ul>
+</div>
 </div>
 
     </div>
