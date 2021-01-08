@@ -10,7 +10,7 @@
 <meta property="og:title" content="Sentiment Analysis of Tweets to Irish Banks - Plots &amp; Numbers">
 
 
-  <link href='https://eoinlarkin.github.io/favicon.ico' rel='icon' type='image/x-icon'/>
+  <link href='../../favicon.ico' rel='icon' type='image/x-icon'/>
 
 
 
@@ -66,7 +66,7 @@
 
   <article class="article">
     
-    <span class="article-duration">3 min read</span>
+    <span class="article-duration">5 min read</span>
     
 
     <h1 class="article-title">Sentiment Analysis of Tweets to Irish Banks</h1>
@@ -165,12 +165,7 @@ ggplot(rbind(aib_by_week, boi_by_week), aes(x=as.Date(date_week), y=cnt, fill= a
 <p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code># Saving output of ggplot
 # ggsave(&quot;tweet_activity_per_week.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)</code></pre>
-<pre class="r"><code># ***************************************************
-# Device analysis - last 30 days - Main Accounts
-# ***************************************************
-
-
-tweets_30day_boi_source &lt;- as_tibble(tweets_30day_boi$source) %&gt;%
+<pre class="r"><code>tweets_30day_boi_source &lt;- as_tibble(tweets_30day_boi$source) %&gt;%
   group_by(value) %&gt;%
   summarise(cnt = n()) %&gt;%
   mutate(perc = cnt / sum(cnt)) %&gt;%
@@ -200,6 +195,131 @@ plot_devices &lt;- ggplot(rbind(tweets_30day_aib_source, tweets_30day_boi_source
 # Visualise plot 
 plot_devices </code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>boi_loc &lt;- as_tibble(tweets_30day_boi$location) %&gt;%
+  group_by(value) %&gt;%
+  summarise(cnt = n()) %&gt;%
+  mutate(perc = cnt / sum(cnt)) %&gt;%
+  mutate(account = &#39;@bankofireland&#39;) %&gt;%
+  filter(perc &gt;= 0.01) 
+  
+aib_loc &lt;- as_tibble(tweets_30day_aib$location) %&gt;%
+  group_by(value) %&gt;%
+  summarise(cnt = n()) %&gt;%
+  mutate(perc = cnt / sum(cnt)) %&gt;%
+  mutate(account = &#39;@aibireland&#39;) %&gt;%
+  filter(perc &gt;= 0.01) 
+
+ggplot(rbind(aib_loc, boi_loc), aes(x=value, y=perc, fill= account)) +
+  geom_bar(stat=&quot;identity&quot;, position=&quot;dodge&quot;, color=&#39;white&#39;)+
+  labs(x = &quot;&quot;, y=&quot;% of all Tweets&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  ggtitle(&quot;Last 30 Days: Origin of tweets&quot;) + 
+  scale_fill_manual(&quot;Account&quot;, values = c(&quot;@aibireland&quot; = &quot;mediumpurple4&quot;, &quot;@bankofireland&quot; = &quot;dodgerblue4&quot;)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) </code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>ggsave(&quot;tweet_origin_main_accounts.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=100)</code></pre>
+<p>Next we can parse the tweets to extract the most frequent words mentioned:</p>
+<pre class="r"><code># plot the top 15 words
+custom_words &lt;- as.data.frame(c(&#39;aibireland&#39;,&#39;boi&#39;, &#39;talktoboi&#39;, &#39;bankofireland&#39;, &#39;bank&#39;, &#39;askaib&#39;), stringsAsFactors=FALSE)
+colnames(custom_words) &lt;- &#39;word&#39;
+
+# plotting the top words boi
+tweets_boi %&gt;%
+  filter(created_at &gt;= filter_date) %&gt;%
+  dplyr::select(text_clean) %&gt;%
+  unnest_tokens(word, text_clean) %&gt;% 
+  anti_join(stop_words) %&gt;%
+  anti_join(custom_words) %&gt;%
+  count(word, sort = TRUE) %&gt;%
+  top_n(25) %&gt;%
+  mutate(word = reorder(word, n)) %&gt;%
+  ggplot(aes(x = word, y = n)) +
+  geom_col(fill=&quot;dodgerblue4&quot;) +
+  xlab(NULL) +
+  coord_flip() +
+  labs(x = &quot;Unique Words&quot;,
+       y = &quot;Count&quot;,
+       title = &quot;@Talktoboi - High frequency words in tweets&quot;)
+
+# ggsave(&quot;frequent_words_boi.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)
+
+# plotting the top words
+tweets_aib %&gt;%
+  filter(created_at &gt;= filter_date) %&gt;%
+  filter(screen_name != &#39;EBSSVRCampaign&#39;) %&gt;%
+  dplyr::select(text_clean) %&gt;%
+  unnest_tokens(word, text_clean) %&gt;% 
+  anti_join(stop_words) %&gt;%
+  anti_join(custom_words) %&gt;%
+  count(word, sort = TRUE) %&gt;%
+  top_n(25) %&gt;%
+  mutate(word = reorder(word, n)) %&gt;%
+  ggplot(aes(x = word, y = n)) +
+  geom_col(fill=&quot;mediumpurple4&quot;) +
+  xlab(NULL) +
+  coord_flip() +
+  labs(x = &quot;Unique Words&quot;,
+       y = &quot;Count&quot;,
+       title = &quot;@Askaib - High frequency words in tweets&quot;)
+
+# ggsave(&quot;frequent_words_aib.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)</code></pre>
+<p>Sentiment analysis of tweets:</p>
+<pre class="r"><code>library(&quot;SnowballC&quot;)
+library(&quot;tm&quot;)
+library(&quot;syuzhet&quot;)
+library(&#39;wesanderson&#39;)
+
+boi_tweets_sent &lt;- tweets_30day_boi$text_clean
+aib_tweets_sent &lt;- tweets_30day_aib$text_clean
+word.boi &lt;- as.vector(boi_tweets_sent)
+word.aib &lt;- as.vector(aib_tweets_sent)
+
+sent.value_boi &lt;- get_sentiment(word.boi)
+sent.value_aib &lt;- get_sentiment(word.aib)
+
+
+category_sent_boi &lt;- ifelse(sent.value_boi &lt; 0, &quot;Negative&quot;, ifelse(sent.value_boi &gt; 0, &quot;Positive&quot;, &quot;Neutral&quot;))
+df_sent_boi &lt;- cbind.data.frame(tweets_30day_boi$created_at, word.boi,sent.value_boi,category_sent_boi)
+colnames(df_sent_boi) &lt;- c(&#39;date&#39;, &#39;tweet&#39;, &#39;sentiment_score&#39;, &#39;sentiment_category&#39;)
+
+category_sent_aib &lt;- ifelse(sent.value_aib &lt; 0, &quot;Negative&quot;, ifelse(sent.value_aib &gt; 0, &quot;Positive&quot;, &quot;Neutral&quot;))
+df_sent_aib &lt;- cbind.data.frame(tweets_30day_aib$created_at, word.aib,sent.value_aib,category_sent_aib)
+colnames(df_sent_aib) &lt;- c(&#39;date&#39;, &#39;tweet&#39;, &#39;sentiment_score&#39;, &#39;sentiment_category&#39;)
+
+
+ as_tibble(df_sent_boi) %&gt;%
+  mutate(date = as.Date(date)) %&gt;% 
+  mutate(date = floor_date(date, unit = &quot;day&quot;)) %&gt;%
+  group_by(date, sentiment_category) %&gt;%
+  summarise(cnt = n()) %&gt;%
+  mutate(perc = cnt / sum(cnt)) %&gt;%
+  ggplot(aes(x=date, y=perc, group=sentiment_category, color = sentiment_category)) +
+  geom_line(size=1) +
+  geom_point() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_manual(values=c(&#39;#D16103&#39;, &#39;#4E84C4&#39;, &#39;#52854C&#39;)) + #wes_palette(n=3, name=&quot;Darjeeling1&quot;)) +
+   labs(x = &quot;Date&quot;,
+        y = &quot;Percentage of Tweets&quot;,
+        title = &quot;@bankofireland - Sentiment Analysis over 30 Day Period&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code># ggsave(&quot;sentiment_boi.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)
+ 
+ as_tibble(df_sent_aib) %&gt;%
+   mutate(date = as.Date(date)) %&gt;%
+   mutate(date = floor_date(date, unit = &quot;day&quot;)) %&gt;%
+   group_by(date, sentiment_category) %&gt;%
+   summarise(cnt = n()) %&gt;%
+   mutate(perc = cnt / sum(cnt)) %&gt;%
+   ggplot(aes(x=date, y=perc, group=sentiment_category, color = sentiment_category)) +
+   geom_line(size=1) +
+   geom_point() +
+   scale_y_continuous(labels = scales::percent) +
+   scale_color_manual(values=c(&#39;#D16103&#39;, &#39;#4E84C4&#39;, &#39;#52854C&#39;)) + #wes_palette(n=3, name=&quot;Darjeeling1&quot;)) +
+   labs(x = &quot;Date&quot;,
+        y = &quot;Percentage of Tweets&quot;,
+        title = &quot;@aibireland - Sentiment Analysis over 30 Day Period&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<pre class="r"><code># ggsave(&quot;sentiment_aib.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)</code></pre>
 </div>
 
     </div>

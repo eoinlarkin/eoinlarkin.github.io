@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 
 
-  <link href='https://eoinlarkin.github.io/favicon.ico' rel='icon' type='image/x-icon'/>
+  <link href='./favicon.ico' rel='icon' type='image/x-icon'/>
 
 
 
@@ -81,7 +81,7 @@
       </span>
 	  
 	   <p class="archive-item-summary">Animated Coivd GraphsAlthough it was a bad year for the world, 2020 was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable. Some great examples can be seen here and here</p>
-	   <p class="read-more"><a href="https://eoinlarkin.github.io/posts/2021-01-01-covid-animations-r/" class="btn btn-template-main"></a>		
+	   <p class="read-more"><a href="./posts/2021-01-01-covid-animations-r/" class="btn btn-template-main"></a>		
 	  
     </article>
     
@@ -99,7 +99,7 @@
 	  
 	   <p class="archive-item-summary">Konigsberg Bridges
 Network analysis has its origins in the Königsberg Bridge problem. The problem was to find a walk through the city that would cross each of the 7 bridges exactly once. In 1736 Euler studied a way to solve this problem mathematically.</p>
-	   <p class="read-more"><a href="https://eoinlarkin.github.io/posts/2020-10-06-network-analysis-intro/" class="btn btn-template-main"></a>		
+	   <p class="read-more"><a href="./posts/2020-10-06-network-analysis-intro/" class="btn btn-template-main"></a>		
 	  
     </article>
      
@@ -112,7 +112,21 @@
       </span>
 	  
 	   <p class="archive-item-summary">Strava is an internet service for tracking human exercise which incorporates social network features - it is sometimes referred to as “Facebook for cyclist”. Strava provides tools for analysing activities and relative performance - however there are no native Strava tools to visualise activities.</p>
-	   <p class="read-more"><a href="https://eoinlarkin.github.io/posts/2020-09-26-visualizing-strava-activities-with-r/" class="btn btn-template-main"></a>		
+	   <p class="read-more"><a href="./posts/2020-09-26-visualizing-strava-activities-with-r/" class="btn btn-template-main"></a>		
+	  
+    </article>
+     
+    <article class="archive-item">
+      <a href="./posts/2020-08-01-shapefiles-r/" class="archive-item-link">Working with Shapefiles in R</a>
+	  
+      <span class="archive-item-date">
+        2020-08-01
+
+      </span>
+	  
+	   <p class="archive-item-summary">Visualizing the ggplot
+# Preliminarieslibrary(ggplot2)library(tidyverse)library(rgdal)library(sf)library(rgeos)spdf &amp;lt;- readOGR(file.path(path,&amp;quot;./data&amp;quot;), layer = &amp;quot;counties&amp;quot;, verbose=FALSE)spdf@data$id &amp;lt;- rownames(spdf@data)county_ids &amp;lt;- as.data.frame(cbind(id = spdf@data$id, region = spdf@data$NAME_TAG))spdf &amp;lt;- gSimplify(spdf, tol=0.01, topologyPreserve = TRUE)spdf.</p>
+	   <p class="read-more"><a href="./posts/2020-08-01-shapefiles-r/" class="btn btn-template-main"></a>		
 	  
     </article>
      
@@ -126,7 +140,7 @@
 	  
 	   <p class="archive-item-summary">Analysing sentiment based on a text string is pretty classic introductory problem in the field of Machine Learning.
 The idea is seductively simple - by analysing the data of publically available tweets is it possible to discern or extrapolate some additional analysis.</p>
-	   <p class="read-more"><a href="https://eoinlarkin.github.io/posts/2020-02-01-twitter-sentiment-banks/" class="btn btn-template-main"></a>		
+	   <p class="read-more"><a href="./posts/2020-02-01-twitter-sentiment-banks/" class="btn btn-template-main"></a>		
 	  
     </article>
     
