@@ -121,8 +121,9 @@
 
       </span>
 	  
-	   <p class="archive-item-summary">Visualizing the ggplot
-# Preliminarieslibrary(ggplot2)library(tidyverse)library(rgdal)library(sf)library(rgeos)spdf &amp;lt;- readOGR(file.path(path,&amp;quot;./data&amp;quot;), layer = &amp;quot;counties&amp;quot;, verbose=FALSE)spdf@data$id &amp;lt;- rownames(spdf@data)county_ids &amp;lt;- as.data.frame(cbind(id = spdf@data$id, region = spdf@data$NAME_TAG))spdf &amp;lt;- gSimplify(spdf, tol=0.01, topologyPreserve = TRUE)spdf.</p>
+	   <p class="archive-item-summary">Reference posts: https://rpubs.com/BrunoVoisin/csomaps
+Visualizing the ggplot
+# Preliminarieslibrary(ggplot2)library(tidyverse)library(rgdal)library(sf)library(rgeos)spdf &amp;lt;- readOGR(file.path(path,&amp;quot;./data&amp;quot;), layer = &amp;quot;counties&amp;quot;, verbose=FALSE)spdf@data$id &amp;lt;- rownames(spdf@data)county_ids &amp;lt;- as.data.frame(cbind(id = spdf@data$id, region = spdf@data$NAME_TAG))spdf &amp;lt;- gSimplify(spdf, tol=0.</p>
 	   <p class="read-more"><a href="../posts/2020-08-01-shapefiles-r/" class="btn btn-template-main"></a>		
 	  
     </article>
