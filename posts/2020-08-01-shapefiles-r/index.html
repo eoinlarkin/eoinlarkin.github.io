@@ -66,7 +66,7 @@
 
   <article class="article">
     
-    <span class="article-duration">1 min read</span>
+    <span class="article-duration">3 min read</span>
     
 
     <h1 class="article-title">Working with Shapefiles in R</h1>
@@ -79,31 +79,59 @@
       
 
 
-<p>Reference posts: <a href="https://rpubs.com/BrunoVoisin/csomaps" class="uri">https://rpubs.com/BrunoVoisin/csomaps</a></p>
-<p>Visualizing the ggplot</p>
-<pre class="r"><code># Preliminaries
-library(ggplot2)
-library(tidyverse)
-library(rgdal)
-library(sf)
-library(rgeos)</code></pre>
-<pre class="r"><code>spdf &lt;- readOGR(file.path(path,&quot;./data&quot;), layer = &quot;counties&quot;, verbose=FALSE)
+<p>R and the <code>ggplot</code> library provide an extremely flexible framework for the plotting and visualisation of data. Plots can be extended to not just traditional line and bar plots but also to geospatial visualisations (or <a href="https://en.wikipedia.org/wiki/Choropleth_map">choropleths</a>)</p>
+<p>In order to plot geospatial information, we need to import “shapefile” data into R. On wikipedia a shapefile is defined as:</p>
+<blockquote>
+<p><em>“The shapefile format is a geospatial vector data format for geographic information system (GIS) software. It is developed and regulated by Esri as a mostly open specification for data interoperability among Esri and other GIS software products”</em></p>
+</blockquote>
+<p>Effectively the shapefile is just a means of storing a vector or polygon - in this case the counties are just polygons that we will be plotting to form the map.</p>
+<p>The shapefiles are sourced from the following repository of shapefiles from the University College Dublin library:<a href="https://libguides.ucd.ie/gisguide/FindSpatialData">link</a>. Shapefiles for Irish counties are sourced from OpenStreetMap and cna be downloaded here:<a href="https://www.townlands.ie/page/download/">link</a></p>
+<p>Once the shapefile is downloaded, it can be imported into R using the <code>rgdal</code> and <code>regos</code> function. We will also use <code>broom</code> to convert the shapefile into a dataframe for plotting using <code>ggplot</code>.</p>
+<p>The following code imports our shaapefile from the <code>path</code> directory. For this example, I’m using the counties shapefile from OpenStreetMap.</p>
+<p>Shapefiles can be incredibly detailed however we don’t necessarily need a very high level of resolution to plot the map. In the code below we use the <code>gSimplify</code> function to simplify our shapefile, using three different tolerance levels. We will then see how this impacts on the plotted data.</p>
+<pre class="r"><code>library(rgdal)
+library(rgeos)
+library(broom)
+
+spdf &lt;- readOGR(file.path(path,&quot;./data&quot;), layer = &quot;counties&quot;, verbose=FALSE)
 spdf@data$id &lt;- rownames(spdf@data)
 
+spdf.df_simp05 &lt;- tidy(gSimplify(spdf, tol=0.05, topologyPreserve = TRUE))
+spdf.df_simp10 &lt;- tidy(gSimplify(spdf, tol=0.10, topologyPreserve = TRUE))
+spdf.df_simp50 &lt;- tidy(gSimplify(spdf, tol=0.50, topologyPreserve = TRUE))</code></pre>
+<p>Once the shapefiles are imported, I created three separated plots, visualising the output. The plots themselves are very basic but can be customised using <code>ggplot</code> notation:</p>
+<pre class="r"><code>p1 &lt;- spdf.df_simp05 %&gt;%
+        ggplot(.) + 
+        aes(long, lat, group=group) +
+        geom_polygon(colour=&quot;grey&quot;)  +
+        labs(title=&#39;Simplify Tolerance = .05&#39;)
+
+p2 &lt;- spdf.df_simp10 %&gt;%
+        ggplot(.) + 
+        aes(long, lat, group=group) +
+        geom_polygon(colour=&quot;grey&quot;)  +
+        labs(title=&#39;Simplify Tolerance = .10&#39;)
+
+p3 &lt;- spdf.df_simp50 %&gt;%
+        ggplot(.) + 
+        aes(long, lat, group=group) +
+        geom_polygon(colour=&quot;grey&quot;) +
+        labs(title=&#39;Simplify Tolerance = .50&#39;)</code></pre>
+<pre class="r"><code># Visualising the plots
+p1 | p2 | p3</code></pre>
+<p><img src="../../posts/2020-08-01-shapefiles-r/index_files/figure-html/unnamed-chunk-3-1.png" width="1152" />
+Based on the plots above the tolerance level of <code>0.05</code> looks best suited to give the appropriate trade off between plot resolution and detail. At a tolerance level of <code>0.50</code>, the plot breaks down; using <code>0.10</code> we can see the results are reasonably ok iwth some degradation in detail along the coastlines.</p>
+<p>Once we have decided on a tolerance level for the shapefile resolution, the following code appends the County names to the shapefile. This will be useful when plotting county level detail and linking to external data sources:</p>
+<pre class="r"><code># We can add the county names to the shapefile 
 county_ids &lt;- as.data.frame(cbind(id = spdf@data$id, region = spdf@data$NAME_TAG))
-
-spdf &lt;- gSimplify(spdf, tol=0.01, topologyPreserve = TRUE)
-spdf.df &lt;- fortify(spdf)
-spdf.df &lt;- inner_join(spdf.df, county_ids, by=&quot;id&quot;)</code></pre>
-<pre class="r"><code>baselayer &lt;-  spdf.df %&gt;%
-              # filter(date &gt;= &#39;2020-12-01&#39;) %&gt;%
-              tidyr::drop_na() %&gt;%
-              ggplot(.) + 
-                      aes(long, lat, group=group) +
-                      geom_polygon(colour=&quot;grey&quot;)
-
-baselayer</code></pre>
-<p><img src="../../posts/2020-08-01-shapefiles-r/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+spdf.df &lt;- inner_join(spdf.df_simp05, county_ids, by=&quot;id&quot;)</code></pre>
+<div id="other-references" class="section level2">
+<h2>Other References</h2>
+<ul>
+<li>Great post on plotting CSO data on maps in R: <a href="https://rpubs.com/BrunoVoisin/csomaps">link</a></li>
+<li>Quick start guide for the Central Statistics Office of Irleand’s R package <a href="https://cran.r-project.org/web/packages/csodata/vignettes/quick_start_guide.html">link</a></li>
+</ul>
+</div>
 
     </div>
   </article>

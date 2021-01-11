@@ -86,6 +86,7 @@
 <p>The following animated plots leverage data from the <a href="https://covid19datahub.io/index.html">Covid19 Data Hub</a> to created animated visualisations of the Covid-19 incidence rates in Ireland.</p>
 <p>The first plots visualise the time series for the number of cases in the Republic if Ireland over 2020 while the second tracks the 7 day incidence rate on a per county basis.</p>
 <p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
+<p><img src="../../post/2021-01-01-covid-animations-r/county_barplot_animation.gif" /></p>
 <p><img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" /></p>
 <p>Although the code to generate the plots looks complex, it’s actually relatively straight forward to animate them - the real work is in summarizing the data and laying out the plots in the correct format.</p>
 </div>
@@ -94,7 +95,7 @@
 <p>The following packages are loaded:</p>
 <pre class="r"><code>library(COVID19)
 library(ggplot2)
-library(dplyr)
+library(tidyverse)
 library(rgeos)
 library(maptools)
 library(rgdal)
@@ -161,7 +162,7 @@ ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
 
 # Viewing the plot
 line_plot</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="864" /></p>
+<p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-1-1.png" width="864" /></p>
 <p>The following code then takes the base plot and animates it over time. In order to animate the plot the <code>gganimate</code> package is used. The code <code>transition_reveal(date)</code> tells R to use the <code>date</code> field as the basis of our plot animation.</p>
 <pre class="r"><code>line_plot_animation &lt;- animate(line_plot + transition_reveal(date),
                                renderer = gifski_renderer(loop = T),
@@ -191,14 +192,14 @@ ire_byregion$region &lt;- ire_byregion$administrative_area_level_2
 
 # A new column to calculate daily delta in confirmed cases
 ire_byregion %&lt;&gt;%
-            arrange(id, date) %&gt;%
-            group_by(id) %&gt;%
+            arrange(region, date) %&gt;%
+            group_by(region) %&gt;%
             dplyr::mutate(confirmed_delta = confirmed - lag(confirmed, default = first(confirmed)))
 
 
 # Calculating the rolling 7 day average
  ire_byregion %&lt;&gt;%
-    group_by(id) %&gt;%
+    group_by(region) %&gt;%
     arrange(date) %&gt;% 
     dplyr::mutate(confirmed_7day = zoo::rollmean(confirmed_delta, k = 7, fill = NA, align=&#39;right&#39;)) %&gt;%
     dplyr::ungroup()
@@ -217,28 +218,31 @@ drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &qu
            &quot;longitude&quot;, &quot;key&quot;, &quot;key_google_mobility&quot;, &quot;key_apple_mobility&quot;, &quot;key_numeric&quot;, &quot;key_alpha_2&quot;  )
 
 ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pre>
-<pre class="r"><code>county_barplot &lt;- ggplot(ire_byregion, aes(x=region, y=confirmed_7day_per_1000, fill=region)) +
+<pre class="r"><code>county_barplot &lt;- ggplot(drop_na(ire_byregion), aes(x=region, y=confirmed_7day_per_1000, fill=region)) +
                   geom_bar(stat=&quot;identity&quot;) +
+                  scale_fill_viridis_d(alpha=0.75) +
                   theme(legend.position = &quot;none&quot;) + # hiding the legend
-                  theme(axis.text.x = element_text(angle = 45, hjust = 1)) #rotating the labels
-
+                  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + #rotating the labels
+                  labs(title=&#39;Seven Day Incidence Rate by County per 1000 of Population&#39;) +
+                  xlab(&#39;County&#39;) + ylab(&#39;Confirmed Cases per 1000&#39;)
 county_barplot</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="1152" /></p>
+<p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-3-1.png" width="1152" /></p>
 <p>Animating the barplot :</p>
 <pre class="r"><code>county_barplot_animation &lt;- animate(county_barplot  +
-                                        transition_states(date ,transition_length = 0.5,state_length = 0) +
+                                        transition_states(date ,transition_length = 1,state_length = 0) +
                                         ease_aes(&#39;sine-in-out&#39;) +
                                         labs(subtitle = &quot;Date: {closest_state}&quot;),
                                renderer = gifski_renderer(loop = T),
-                               height=333,
-                               width=800,
-                               nframes = 250)
+                               height=400,
+                               width=1000,
+                               nframes = 350)
 
 # Saving the plot output
 anim_save(&quot;county_barplot_animation.gif&quot;, county_barplot_animation)</code></pre>
 </div>
 <div id="creating-the-shapefiles-for-plotting" class="section level2">
 <h2>Creating the shapefiles for Plotting</h2>
+<p>In order to visualise the incidence rate by county, we first need to import county ‘shapefiles’ that we can plot. Once these are imported and plotted, it’s a relatively straightforward process to link them to the Covid data and to visualise the incidence rate by county.</p>
 <pre class="r"><code>spdf &lt;- readOGR(file.path(path,&quot;./data&quot;), layer = &quot;counties&quot;, verbose=FALSE)
 spdf@data$id &lt;- rownames(spdf@data)
 
@@ -277,6 +281,9 @@ plot &lt;-   baselayer +
                 axis.ticks = element_blank(),
                 axis.text = element_blank()) + 
           labs(title=&quot;Number of New Daily Cases - 7 Day Rolling Average&quot;) </code></pre>
+</div>
+<div id="animating-the-choropleth" class="section level2">
+<h2>Animating the Choropleth</h2>
 <pre class="r"><code>anim &lt;- plot + transition_time(date) + labs(subtitle = &quot;Date: {frame_time}&quot;)
 plot_output &lt;- animate(anim, nframes = 200, renderer = gifski_renderer(loop = T))
 anim_save(&quot;choropleth_covid_ire.gif&quot;, plot_output)</code></pre>
