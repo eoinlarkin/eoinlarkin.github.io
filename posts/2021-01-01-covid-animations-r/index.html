@@ -66,7 +66,7 @@
 
   <article class="article">
     
-    <span class="article-duration">5 min read</span>
+    <span class="article-duration">6 min read</span>
     
 
     <h1 class="article-title">Visualizing Covid data using animated graphs</h1>
@@ -173,13 +173,9 @@ line_plot</code></pre>
 anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)</code></pre>
 <p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
 </div>
-</div>
-<div id="animated-plot-by-county" class="section level1">
-<h1>Animated Plot by County</h1>
-<p>The animated plot is a little more tricky as we need to import both data on the Covid-19 incidence rate on a per county basis as well as creating a map of Ireland with county borders. In order to create the county borders we need to import <em>shape files</em> that mark the shape of each county for plotting on our map.</p>
-<div id="importing-covid-data-1" class="section level2">
-<h2>Importing Covid Data</h2>
-<p>The first step is to import the data using the <code>covid</code> package:</p>
+<div id="county-level-data" class="section level2">
+<h2>County Level Data</h2>
+<p>The Covid-19 dataset also contains county level data <code>administrative_area_level_2</code> data field. This can be downloaded from the Covid-19 Data Hub by usng the <code>level=2</code> argument:</p>
 <pre class="r"><code>ire_byregion &lt;- covid19(country=&#39;IE&#39;,
                         level=2,
                         start=&#39;2020-02-22&#39;,
@@ -218,6 +214,7 @@ drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &qu
            &quot;longitude&quot;, &quot;key&quot;, &quot;key_google_mobility&quot;, &quot;key_apple_mobility&quot;, &quot;key_numeric&quot;, &quot;key_alpha_2&quot;  )
 
 ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pre>
+<p>Using the data, the county level information can be plotted as follows, using the <code>viridis</code> color scale:</p>
 <pre class="r"><code>county_barplot &lt;- ggplot(drop_na(ire_byregion), aes(x=region, y=confirmed_7day_per_1000, fill=region)) +
                   geom_bar(stat=&quot;identity&quot;) +
                   scale_fill_viridis_d(alpha=0.75) +
@@ -227,7 +224,7 @@ ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pr
                   xlab(&#39;County&#39;) + ylab(&#39;Confirmed Cases per 1000&#39;)
 county_barplot</code></pre>
 <p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-3-1.png" width="1152" /></p>
-<p>Animating the barplot :</p>
+<p>Finally, the barplot can be animated using the <code>transition_states</code> function. The <code>ease_aes</code> defines how the bars will move between each of the states:</p>
 <pre class="r"><code>county_barplot_animation &lt;- animate(county_barplot  +
                                         transition_states(date ,transition_length = 1,state_length = 0) +
                                         ease_aes(&#39;sine-in-out&#39;) +
@@ -239,7 +236,12 @@ county_barplot</code></pre>
 
 # Saving the plot output
 anim_save(&quot;county_barplot_animation.gif&quot;, county_barplot_animation)</code></pre>
+<p><img src="../../post/2021-01-01-covid-animations-r/county_barplot_animation.gif" /></p>
 </div>
+</div>
+<div id="animated-plot-by-county" class="section level1">
+<h1>Animated Plot by County</h1>
+<p>The animated plot is a little more tricky as we need to import both data on the Covid-19 incidence rate on a per county basis as well as creating a map of Ireland with county borders. In order to create the county borders we need to import <em>shape files</em> that mark the shape of each county for plotting on our map.</p>
 <div id="creating-the-shapefiles-for-plotting" class="section level2">
 <h2>Creating the shapefiles for Plotting</h2>
 <p>In order to visualise the incidence rate by county, we first need to import county ‘shapefiles’ that we can plot. Once these are imported and plotted, it’s a relatively straightforward process to link them to the Covid data and to visualise the incidence rate by county.</p>
@@ -263,6 +265,7 @@ ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pr
 </div>
 <div id="plot-shapefile-data" class="section level2">
 <h2>Plot Shapefile data</h2>
+<p>Once the shapefile is imported we can plot it using <code>ggplot</code>. The following code produces the plot prior to animation:</p>
 <pre class="r"><code>baselayer &lt;-  spdf.df %&gt;%
               # filter(date &gt;= &#39;2020-12-01&#39;) %&gt;%
               tidyr::drop_na() %&gt;%
@@ -280,13 +283,18 @@ plot &lt;-   baselayer +
                 panel.background = element_blank(),
                 axis.ticks = element_blank(),
                 axis.text = element_blank()) + 
-          labs(title=&quot;Number of New Daily Cases - 7 Day Rolling Average&quot;) </code></pre>
+          labs(title=&quot;Number of New Daily Cases - 7 Day Rolling Average&quot;) 
+
+plot</code></pre>
+<p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="animating-the-choropleth" class="section level2">
 <h2>Animating the Choropleth</h2>
+<p>Finally, we can animate the choropleth with the following code:</p>
 <pre class="r"><code>anim &lt;- plot + transition_time(date) + labs(subtitle = &quot;Date: {frame_time}&quot;)
 plot_output &lt;- animate(anim, nframes = 200, renderer = gifski_renderer(loop = T))
 anim_save(&quot;choropleth_covid_ire.gif&quot;, plot_output)</code></pre>
+<p><img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" /></p>
 </div>
 </div>
 
