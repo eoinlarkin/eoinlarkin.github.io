@@ -136,7 +136,8 @@ spdf@data$id &lt;- rownames(spdf@data)
 spdf.df &lt;- tidy(gSimplify(spdf, tol=0.05, topologyPreserve = TRUE))</code></pre>
 <p>As an optional step, we can reverse the projection method (TM65) used by the CEO datasets into traditional latitude and longitude coordinates:</p>
 <pre class="r"><code>library(proj4)
-tm65 &lt;- &quot;+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs&quot;
+tm65 &lt;- &quot;+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 
++y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs&quot;
 
 # reverse the projection on long/lat
 newlonglat &lt;- project(
@@ -154,7 +155,6 @@ spdf.df.reversed$lat &lt;- newlonglat[,2]</code></pre>
         geom_polygon(colour=&quot;grey&quot;)  +
         labs(title=&#39;Administrative Counties - TM65 Projection&#39;)
 
-
 p2 &lt;- spdf.df.reversed %&gt;%
         ggplot(.) + 
         aes(long, lat, group=group) +
@@ -164,6 +164,21 @@ p2 &lt;- spdf.df.reversed %&gt;%
 # plotting the output:
 p1 + p2 + plot_layout(ncol = 2)</code></pre>
 <p><img src="../../posts/2020-08-01-shapefiles-r/index_files/figure-html/unnamed-chunk-8-1.png" width="960" /></p>
+<pre class="r"><code>county_ids &lt;- as.data.frame(cbind(id = spdf@data$id, region = spdf@data$COUNTYNAME))
+spdf.df &lt;- inner_join(spdf.df, county_ids, by=&quot;id&quot;)
+
+housing &lt;- as.data.frame(cbind(id = spdf@data$id, housing = as.numeric(spdf@data$VACANT2011)))
+spdf.df &lt;- inner_join(spdf.df, housing, by=&quot;id&quot;)</code></pre>
+<pre class="r"><code>p1 &lt;- spdf.df %&gt;%
+      ggplot(.) + 
+      aes(long, lat, group=group) +
+      geom_polygon(colour=&quot;grey&quot;)  +
+      labs(title=&#39;Administrative Counties - TM65 Projection&#39;) +
+      aes(fill=as.numeric(housing)) +
+      scale_fill_distiller(palette = &#39;YlOrRd&#39;, direction=1, guide=&#39;colorbar&#39;)
+
+p1  </code></pre>
+<p><img src="../../posts/2020-08-01-shapefiles-r/index_files/figure-html/unnamed-chunk-10-1.png" width="768" /></p>
 <div id="other-references" class="section level2">
 <h2>Other References</h2>
 <ul>
