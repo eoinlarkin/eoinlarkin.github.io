@@ -118,13 +118,22 @@ p3 &lt;- spdf.df_simp50 %&gt;%
         geom_polygon(colour=&quot;grey&quot;) +
         labs(title=&#39;Simplify Tolerance = .50&#39;)</code></pre>
 <pre class="r"><code># Visualising the plots
-p1 | p2 | p3</code></pre>
-<p><img src="../../posts/2020-08-01-shapefiles-r/index_files/figure-html/unnamed-chunk-3-1.png" width="1152" />
+p1 + p2 + p3 + plot_layout(ncol = 2)</code></pre>
+<p><img src="../../posts/2020-08-01-shapefiles-r/index_files/figure-html/unnamed-chunk-3-1.png" width="960" />
 Based on the plots above the tolerance level of <code>0.05</code> looks best suited to give the appropriate trade off between plot resolution and detail. At a tolerance level of <code>0.50</code>, the plot breaks down; using <code>0.10</code> we can see the results are reasonably ok iwth some degradation in detail along the coastlines.</p>
 <p>Once we have decided on a tolerance level for the shapefile resolution, the following code appends the County names to the shapefile. This will be useful when plotting county level detail and linking to external data sources:</p>
 <pre class="r"><code># We can add the county names to the shapefile 
 county_ids &lt;- as.data.frame(cbind(id = spdf@data$id, region = spdf@data$NAME_TAG))
 spdf.df &lt;- inner_join(spdf.df_simp05, county_ids, by=&quot;id&quot;)</code></pre>
+<pre class="r"><code>library(csodata)
+
+# importing data from the CSO dataset
+tbl1 &lt;- cso_get_data(&quot;EA052&quot;)</code></pre>
+<p>Plotting the 2011 “NUTS3” dataset:</p>
+<pre class="r"><code>spdf &lt;- cso_get_geo(&quot;NUTS3_2011&quot;) #getting the shapefile
+
+#spdf@data$id &lt;- rownames(spdf@data)
+spdf.df &lt;- tidy(gSimplify(spdf, tol=0.05, topologyPreserve = TRUE))</code></pre>
 <div id="other-references" class="section level2">
 <h2>Other References</h2>
 <ul>
