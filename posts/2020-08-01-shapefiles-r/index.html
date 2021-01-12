@@ -66,7 +66,7 @@
 
   <article class="article">
     
-    <span class="article-duration">3 min read</span>
+    <span class="article-duration">4 min read</span>
     
 
     <h1 class="article-title">Working with Shapefiles in R</h1>
@@ -87,7 +87,7 @@
 <p>Effectively the shapefile is just a means of storing a vector or polygon - in this case the counties are just polygons that we will be plotting to form the map.</p>
 <p>The shapefiles are sourced from the following repository of shapefiles from the University College Dublin library:<a href="https://libguides.ucd.ie/gisguide/FindSpatialData">link</a>. Shapefiles for Irish counties are sourced from OpenStreetMap and cna be downloaded here:<a href="https://www.townlands.ie/page/download/">link</a></p>
 <p>Once the shapefile is downloaded, it can be imported into R using the <code>rgdal</code> and <code>regos</code> function. We will also use <code>broom</code> to convert the shapefile into a dataframe for plotting using <code>ggplot</code>.</p>
-<p>The following code imports our shaapefile from the <code>path</code> directory. For this example, I’m using the counties shapefile from OpenStreetMap.</p>
+<p>The following code imports our shapefile from the <code>path</code> directory. For this example, I’m using the counties shapefile from OpenStreetMap <a href="https://www.townlands.ie/page/download/">link</a>.</p>
 <p>Shapefiles can be incredibly detailed however we don’t necessarily need a very high level of resolution to plot the map. In the code below we use the <code>gSimplify</code> function to simplify our shapefile, using three different tolerance levels. We will then see how this impacts on the plotted data.</p>
 <pre class="r"><code>library(rgdal)
 library(rgeos)
@@ -129,11 +129,40 @@ spdf.df &lt;- inner_join(spdf.df_simp05, county_ids, by=&quot;id&quot;)</code></
 
 # importing data from the CSO dataset
 tbl1 &lt;- cso_get_data(&quot;EA052&quot;)</code></pre>
-<p>Plotting the 2011 “NUTS3” dataset:</p>
-<pre class="r"><code>spdf &lt;- cso_get_geo(&quot;NUTS3_2011&quot;) #getting the shapefile
+<p>In census reports the country is divided into 29 counties/administrative counties and the five Cities which represent the local authority areas. In order to plot Census data, we need to visualise these administrative regions.</p>
+<pre class="r"><code>spdf &lt;- readOGR(file.path(path,&quot;./data&quot;), layer = &quot;Census2011_Admin_Counties_generalised20m&quot;, verbose=FALSE)
+spdf@data$id &lt;- rownames(spdf@data)
 
-#spdf@data$id &lt;- rownames(spdf@data)
 spdf.df &lt;- tidy(gSimplify(spdf, tol=0.05, topologyPreserve = TRUE))</code></pre>
+<p>As an optional step, we can reverse the projection method (TM65) used by the CEO datasets into traditional latitude and longitude coordinates:</p>
+<pre class="r"><code>library(proj4)
+tm65 &lt;- &quot;+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs &quot;
+
+# reverse the projection on long/lat
+newlonglat &lt;- project(
+  cbind(spdf.df$long, spdf.df$lat),
+  proj=tm65, inverse=TRUE)
+
+# replace long/lat with the new ones
+spdf.df.reversed &lt;- spdf.df
+spdf.df.reversed$long &lt;- newlonglat[,1]
+spdf.df.reversed$lat &lt;- newlonglat[,2]</code></pre>
+<p>Finally, we can visualise the plot output as follows:</p>
+<pre class="r"><code>p1 &lt;- spdf.df %&gt;%
+        ggplot(.) + 
+        aes(long, lat, group=group) +
+        geom_polygon(colour=&quot;grey&quot;)  +
+        labs(title=&#39;Administrative Counties - TM65 Projection&#39;)
+
+
+p2 &lt;- spdf.df.reversed %&gt;%
+        ggplot(.) + 
+        aes(long, lat, group=group) +
+        geom_polygon(colour=&quot;grey&quot;)  +
+        labs(title=&#39;Administrative Counties - Reversed Projection&#39;)
+
+p1 + p2 + plot_layout(ncol = 2)</code></pre>
+<p><img src="../../posts/2020-08-01-shapefiles-r/index_files/figure-html/unnamed-chunk-8-1.png" width="960" /></p>
 <div id="other-references" class="section level2">
 <h2>Other References</h2>
 <ul>

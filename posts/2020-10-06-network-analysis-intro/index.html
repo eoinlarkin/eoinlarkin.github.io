@@ -138,7 +138,7 @@ vex_top5_wgt_deg &lt;- deg_y[match(deg_x_top5, deg_x)]</code></pre>
 
 legend(&quot;bottomright&quot;, legend=c(&quot;Time Frame 1&quot;, &quot;Time Frame 2&quot;, &quot;Time Frame 3&quot;),
        col=categorical_pal(8), pch=16, cex=1, bty=&quot;n&quot;)</code></pre>
-<p><img src="index_files/figure-html/question_02-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
+<p><img src="../../posts/2020-10-06-network-analysis-intro/index_files/figure-html/question_02-1.png" width="672" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 <div id="centrality-measures" class="section level2">
 <h2>Centrality Measures</h2>
@@ -180,7 +180,7 @@ legend(&quot;bottomright&quot;, legend=c(&quot;Vertices&quot;, &quot;Top 10 Betw
        col=c(&quot;orange&quot;,&quot;blue4&quot;, &quot;aquamarine3&quot;, &quot;orangered2&quot;), 
        pch= 16, 
        cex=1, bty=&quot;n&quot;)</code></pre>
-<p><img src="index_files/figure-html/q05_02-1.png" width="672" /></p>
+<p><img src="../../posts/2020-10-06-network-analysis-intro/index_files/figure-html/q05_02-1.png" width="672" /></p>
 <p>We note that there are 4 nodes for which the Page-Rank Centrality and the Betweenness Centrality intersect. Of these</p>
 <ul>
 <li>2 are in time step 1</li>
@@ -237,17 +237,17 @@ plot_sim(store_graph_metrics,
          store_graph_metrics$largest_component, 
          &quot;Size of Largest Component&quot;, 
          &quot;Plot of Nodes Removed vs Largest Component&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="../../posts/2020-10-06-network-analysis-intro/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <pre class="r"><code>plot_sim(store_graph_metrics, 
          store_graph_metrics$clustering_coefficient, 
          &quot;Clustering Coefficient&quot;, 
          &quot;Plot of Nodes Removed vs Clustering Coefficient&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<p><img src="../../posts/2020-10-06-network-analysis-intro/index_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
 <pre class="r"><code>plot_sim(store_graph_metrics, 
          store_graph_metrics$modularity, 
          &quot;Network Modularity&quot;, 
          &quot;Plot of Nodes Removed vs Network Modularity&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-1-3.png" width="672" /></p>
+<p><img src="../../posts/2020-10-06-network-analysis-intro/index_files/figure-html/unnamed-chunk-1-3.png" width="672" /></p>
 <p>Examining the plots, we note the following:</p>
 <ul>
 <li><em>Largest Component:</em> This metric decreases as nodes are gradually removed from the network.</li>

@@ -162,7 +162,7 @@ ggplot(rbind(aib_by_week, boi_by_week), aes(x=as.Date(date_week), y=cnt, fill= a
   ggtitle(&quot;Tweet Activity per Week&quot;) + 
   scale_fill_manual(&quot;Account&quot;, values = c(&quot;@aibireland&quot; = &quot;mediumpurple4&quot;, &quot;@bankofireland&quot; = &quot;dodgerblue4&quot;)) +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) </code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="../../posts/2020-02-01-twitter-sentiment-banks/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code># Saving output of ggplot
 # ggsave(&quot;tweet_activity_per_week.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)</code></pre>
 <pre class="r"><code>tweets_30day_boi_source &lt;- as_tibble(tweets_30day_boi$source) %&gt;%
@@ -194,7 +194,7 @@ plot_devices &lt;- ggplot(rbind(tweets_30day_aib_source, tweets_30day_boi_source
 
 # Visualise plot 
 plot_devices </code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="../../posts/2020-02-01-twitter-sentiment-banks/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <pre class="r"><code>boi_loc &lt;- as_tibble(tweets_30day_boi$location) %&gt;%
   group_by(value) %&gt;%
   summarise(cnt = n()) %&gt;%
@@ -216,7 +216,7 @@ ggplot(rbind(aib_loc, boi_loc), aes(x=value, y=perc, fill= account)) +
   ggtitle(&quot;Last 30 Days: Origin of tweets&quot;) + 
   scale_fill_manual(&quot;Account&quot;, values = c(&quot;@aibireland&quot; = &quot;mediumpurple4&quot;, &quot;@bankofireland&quot; = &quot;dodgerblue4&quot;)) +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) </code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="../../posts/2020-02-01-twitter-sentiment-banks/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>ggsave(&quot;tweet_origin_main_accounts.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=100)</code></pre>
 <p>Next we can parse the tweets to extract the most frequent words mentioned:</p>
 <pre class="r"><code># plot the top 15 words
@@ -301,7 +301,7 @@ colnames(df_sent_aib) &lt;- c(&#39;date&#39;, &#39;tweet&#39;, &#39;sentiment_sc
    labs(x = &quot;Date&quot;,
         y = &quot;Percentage of Tweets&quot;,
         title = &quot;@bankofireland - Sentiment Analysis over 30 Day Period&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="../../posts/2020-02-01-twitter-sentiment-banks/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre class="r"><code># ggsave(&quot;sentiment_boi.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)
  
  as_tibble(df_sent_aib) %&gt;%
@@ -318,7 +318,7 @@ colnames(df_sent_aib) &lt;- c(&#39;date&#39;, &#39;tweet&#39;, &#39;sentiment_sc
    labs(x = &quot;Date&quot;,
         y = &quot;Percentage of Tweets&quot;,
         title = &quot;@aibireland - Sentiment Analysis over 30 Day Period&quot;)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<p><img src="../../posts/2020-02-01-twitter-sentiment-banks/index_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
 <pre class="r"><code># ggsave(&quot;sentiment_aib.png&quot;, width = 10, height = 6, units = &quot;in&quot;, dpi=200)</code></pre>
 </div>
 
