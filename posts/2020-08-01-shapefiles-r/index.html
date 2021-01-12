@@ -136,7 +136,7 @@ spdf@data$id &lt;- rownames(spdf@data)
 spdf.df &lt;- tidy(gSimplify(spdf, tol=0.05, topologyPreserve = TRUE))</code></pre>
 <p>As an optional step, we can reverse the projection method (TM65) used by the CEO datasets into traditional latitude and longitude coordinates:</p>
 <pre class="r"><code>library(proj4)
-tm65 &lt;- &quot;+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs &quot;
+tm65 &lt;- &quot;+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs&quot;
 
 # reverse the projection on long/lat
 newlonglat &lt;- project(
@@ -161,7 +161,7 @@ p2 &lt;- spdf.df.reversed %&gt;%
         geom_polygon(colour=&quot;grey&quot;)  +
         labs(title=&#39;Administrative Counties - Reversed Projection&#39;)
 
-# plotting the output
+# plotting the output:
 p1 + p2 + plot_layout(ncol = 2)</code></pre>
 <p><img src="../../posts/2020-08-01-shapefiles-r/index_files/figure-html/unnamed-chunk-8-1.png" width="960" /></p>
 <div id="other-references" class="section level2">
