@@ -6,7 +6,17 @@
     <description>Recent content in Posts on Plots &amp; Numbers</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 01 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 17 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mapping Parler Posts in the UK and Ireland</title>
+      <link>/posts/2021-01-17-draft-post/</link>
+      <pubDate>Sun, 17 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/2021-01-17-draft-post/</guid>
+      <description>Parler is a social network that has a significant user base amount the “alt-right” and other fringe right-wing groups in the United States.
+Following the US Capitol protest on the 6th January 2021 a number of service providers which provided backed infrastructure to Parler cesased their relationship with Parler and the site was forced to shut down on January 9th.</description>
+    </item>
+    
     <item>
       <title>Visualizing Covid data using animated graphs</title>
       <link>/posts/2021-01-01-covid-animations-r/</link>

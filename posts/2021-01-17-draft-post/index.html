@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Mapping Parler Posts in the UK and Ireland - Plots &amp; Numbers</title>
+<meta property="og:title" content="Mapping Parler Posts in the UK and Ireland - Plots &amp; Numbers">
+
+
+  <link href='../../favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="../../css/fonts.css" media="all">
+<link rel="stylesheet" href="../../css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="../../" class="nav-logo">
+    <img src="../../images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../bookshelf/">Bookshelf</a></li>
+    
+    <li><a href="../../heatmaps/">Heatmaps</a></li>
+    
+    <li><a href="https://github.com/eoinlarkin/">GitHub</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">5 min read</span>
+    
+
+    <h1 class="article-title">Mapping Parler Posts in the UK and Ireland</h1>
+
+    
+    <span class="article-date">2021-01-17</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p><a href="https://en.wikipedia.org/wiki/Parler">Parler</a> is a social network that has a significant user base amount the “alt-right” and other fringe right-wing groups in the United States.</p>
+<p>Following the US Capitol protest on the 6th January 2021 a number of service providers which provided backed infrastructure to Parler cesased their relationship with Parler and the site was forced to shut down on January 9th.</p>
+<p>Prior to shutting down a large number of posts from the site were successfully scraped from the site and made more widely available.</p>
+<p>A number of visualisations were subsquently built off the dataset, leveraging the GPS coordinates extracted from videos uploaded to the sit; including <a href="https://kylemcdonald.net/parler/map/">here</a> and <a href="https://thepatr10t.github.io/yall-Qaeda/">here</a></p>
+<p>Most of the mapping resolved around the assault on the US Capitol on the 6th of January. Although not directly leveraging Parler data, The Washington Post have produced an excellent minute by minute account of the day <a href="https://www.washingtonpost.com/investigations/2021/01/16/video-timeline-capitol-siege/?arc404=true">link</a>.e</p>
+<p>The purpose of this analysis is to just focus on the UK and Ireland and to determine if there were any trends in Parler posts. Unfortunately, there doesn’t seem to be any distinct patterns with the volume of data posted to Parler from the UK and Ireland being relatively small. However, it’s still an interesting exercise and an opportunity to create some pretty graphs and work with shapefiles.</p>
+<p>Before reviewing the maps, it’s important to bear in mind the following :</p>
+<ul>
+<li>GPS coordinates reflect the coordinates of where the video was recorded - it doesn’t necessarily imply that a Parler user is present at those coordinates. For instance, it’s possible that the posts were created by a US user who was on holidays.</li>
+<li>The number of posts exclusively relating to the UK and Ireland is relatively small and it would be incorrect to derive any conclusions based of any inferred patterns in the data.</li>
+</ul>
+<p>Now, on to the maps ! The first map provides a visualisation of the GPS coordinates across the UK and Ireland :</p>
+<p>Following this, each post was linked to the relevant County boundary and the map was color coded by their proportional contribution to the total number of posts.</p>
+<p>This map does have a disadvantage in that very small geographical regions are not very visible. In particular, we can’t see the county of Westminster which is the county with the greatest number of posts.</p>
+<p>The plot area can be narrowed to a specific region - London:</p>
+<div id="r-code" class="section level2">
+<h2>R Code</h2>
+<p>The following code was used to derive the underlying maps and tables. In order to create the following steps were completed:</p>
+<ul>
+<li>Import Parler data into R</li>
+<li>Create a basemap for the UK and Ireland using shapefiles</li>
+<li>Overlay the Parler posts on the map</li>
+<li>Link the Parler posts to the county of origin and plot posts by county</li>
+</ul>
+<pre class="r"><code># Importing the libraries used to manipulate and visualise the data
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.3     v purrr   0.3.4
+## v tibble  3.0.4     v dplyr   1.0.2
+## v tidyr   1.1.2     v stringr 1.4.0
+## v readr   1.4.0     v forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(maps)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;maps&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     map</code></pre>
+<pre class="r"><code>library(sf)</code></pre>
+<pre><code>## Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1</code></pre>
+<pre class="r"><code># Defining the Projections
+tm65 &lt;- &quot;+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs&quot;
+OSGB &lt;- &quot;+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs&quot;</code></pre>
+<div id="importing-the-republic-of-ireland-shapefile" class="section level3">
+<h3>Importing the Republic of Ireland Shapefile</h3>
+<p>The shapefile for the Republic of Ireland was sourced from the 2011 Census dataset.</p>
+<pre class="r"><code># Importing the Irish Shape file
+# path &lt;- uncomment and set path
+shp_ire &lt;- st_read(file.path(path, &quot;Census2011_Admin_Counties_generalised20m.shp&quot;),
+                   quiet = TRUE)
+
+# Removing unneeded columns
+shp_ire &lt;- shp_ire %&gt;% select(ID = NUTS3, County = COUNTYNAME)
+
+# Setting the CRS (Coordinate Reference System) mapping to the file
+st_crs(shp_ire) &lt;- tm65
+
+# Transforming to international CRS code 4326
+shp_ire &lt;- st_transform(shp_ire, crs=4326)
+
+# Previewing the Republic of Ireland Shapefile
+shp_ire %&gt;% 
+  ggplot() +
+  geom_sf() +
+  theme_void()</code></pre>
+<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>As we can see, the shapefile excludes Northern Ireland - this can be sourced from the Great Britain shapefile.</p>
+</div>
+<div id="importing-the-great-britain-shapefile" class="section level3">
+<h3>Importing the Great Britain Shapefile</h3>
+<p>The Great Britain shapefiles were sourced from the Office for National Statistics.</p>
+<pre class="r"><code>shp_gb &lt;- st_read(file.path(path, &quot;Counties_and_Unitary_Authorities__December_2019__Boundaries_UK_BFE.shp&quot;),
+                  quiet = TRUE)
+
+# Removing unneeded columns
+shp_gb &lt;- shp_gb %&gt;% select(ID = ctyua19cd, County = ctyua19nm)
+
+# Setting the CRS mapping to the file
+st_crs(shp_gb) &lt;- OSGB
+
+# Transforming to international CRS code 4326
+shp_gb &lt;- st_transform(shp_gb, crs=4326)
+
+# Previewing the Republic of Ireland Shapefile
+shp_gb %&gt;% 
+  ggplot() +
+  geom_sf() +
+  theme_void()</code></pre>
+<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/uk_shapefile-1.png" width="672" /></p>
+</div>
+<div id="merging-the-shapefile" class="section level3">
+<h3>Merging the Shapefile</h3>
+<p>As the shapefiles are in the same dataframe format and have the same CRS mapping, it’s very simple to merge the shapefiles and plot the combined Great Britain and Ireland plot:</p>
+<pre class="r"><code># Merging the shapefile
+shp &lt;- rbind(shp_ire, shp_gb)
+
+# Plotting the output
+baseplot &lt;- shp %&gt;% 
+              ggplot() +
+              geom_sf() +
+              theme_void()
+
+baseplot</code></pre>
+<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="plotting-the-parler-data" class="section level3">
+<h3>Plotting the Parler Data</h3>
+<p>Using the merged shapefile, we can now import and overlay the Parler data</p>
+<pre class="r"><code># Importing the Parler data
+data &lt;- read.csv(file.path(path, &#39;AllGeo.csv&#39;))
+
+# Filtering the data to limit to UK and Ireland
+data &lt;- data %&gt;% 
+               filter(LongitudeDD &gt;= -11 &amp; LongitudeDD &lt;= 2  &amp;  
+                        LatitudeDD &gt;= 50 &amp; LatitudeDD &lt;= 61) 
+
+data_sf &lt;- st_as_sf(data, coords=c(&quot;LongitudeDD&quot;,&quot;LatitudeDD&quot;), crs=4326)
+
+baseplot + 
+  geom_sf(data = data_sf, alpha = .33, color=&#39;darkred&#39;)</code></pre>
+<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+In addition to plotting the points, we can use the <code>st_intersects</code> function to match each GPR coordinate to the County it was posted from.</p>
+<pre class="r"><code>intersection &lt;- st_intersects(data_sf, shp)
+
+intersection %&lt;&gt;% as.data.frame() %&gt;% count(col.id)
+intersection$prop &lt;- intersection$n / sum(intersection$n)</code></pre>
+<pre class="r"><code>merge &lt;- merge(shp, intersection, by.x = 0, by.y = &quot;col.id&quot;, all=TRUE)
+
+map &lt;- merge %&gt;% 
+          ggplot() +
+          theme_void() +
+          geom_sf(aes(fill = prop)) +
+          scale_fill_viridis_c(na.value=&quot;#F5F5F5&quot;, alpha=0.66) +
+          #theme(legend.position = &quot;none&quot;) + # hiding the legend
+          #theme(axis.title = element_blank()) + #hiding the x and y axes
+          theme(legend.position = &#39;right&#39;) +
+          theme(title = element_text(size = 12), 
+                legend.title = element_text(size = 8)) 
+          #+ theme(plot.background= element_rect(fill = &quot;#EBF5FB&quot;, colour = &quot;#EBF5FB&quot;))
+
+map</code></pre>
+<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>We can also plot the data for the London region:</p>
+<pre class="r"><code>#map + coord_sf(ylim=c(51.4, 51.6), xlim=c(-0.25, +0.25)) + 
+#  geom_sf_label(aes(label=County), color=&#39;black&#39;, size=3)
+
+
+labels &lt;- c(&#39;Westminster&#39;, &#39;Camden&#39;, &#39;Islington&#39;, &#39;City of London&#39;, 
+            &#39;Wandsworth&#39;, &#39;Tower Hamlets&#39;, &#39;Southwark&#39;, &#39;Hackney&#39;)
+
+map + coord_sf(ylim=c(51.4, 51.6), xlim=c(-0.25, +0.1)) + 
+  geom_sf_label(data=filter(merge, County %in% labels),
+                aes(label=County), color=&#39;black&#39;, size=3)</code></pre>
+<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References:</h2>
+<p><a href="https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf">Coordinate Reference Systems in R</a>
+<a href="https://epsg.io/4299">TM65 Projection</a></p>
+<p><a href="https://www.r-spatial.org/r/2018/10/25/ggplot2-sf-2.html">Drawing Mpas in R</a></p>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="../../index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="../../images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-173965746-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+
