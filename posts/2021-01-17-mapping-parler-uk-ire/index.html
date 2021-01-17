@@ -91,9 +91,12 @@
 <li>The number of posts exclusively relating to the UK and Ireland is relatively small and it would be incorrect to derive any conclusions based of any inferred patterns in the data.</li>
 </ul>
 <p>Now, on to the maps ! The first map provides a visualisation of the GPS coordinates across the UK and Ireland :</p>
+<p><img src="images/unnamed-chunk-4-1.png" /></p>
 <p>Following this, each post was linked to the relevant County boundary and the map was color coded by their proportional contribution to the total number of posts.</p>
+<p><img src="images/unnamed-chunk-6-1.png" /></p>
 <p>This map does have a disadvantage in that very small geographical regions are not very visible. In particular, we can’t see the county of Westminster which is the county with the greatest number of posts.</p>
 <p>The plot area can be narrowed to a specific region - London:</p>
+<p><img src="images/unnamed-chunk-7-1.png" /></p>
 <div id="r-code" class="section level2">
 <h2>R Code</h2>
 <p>The following code was used to derive the underlying maps and tables. In order to create the following steps were completed:</p>
@@ -146,7 +149,7 @@ shp_ire %&gt;%
   ggplot() +
   geom_sf() +
   theme_void()</code></pre>
-<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <p>As we can see, the shapefile excludes Northern Ireland - this can be sourced from the Great Britain shapefile.</p>
 </div>
 <div id="importing-the-great-britain-shapefile" class="section level3">
@@ -169,7 +172,7 @@ shp_gb %&gt;%
   ggplot() +
   geom_sf() +
   theme_void()</code></pre>
-<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/uk_shapefile-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/uk_shapefile-1.png" width="672" /></p>
 </div>
 <div id="merging-the-shapefile" class="section level3">
 <h3>Merging the Shapefile</h3>
@@ -184,7 +187,7 @@ baseplot &lt;- shp %&gt;%
               theme_void()
 
 baseplot</code></pre>
-<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="plotting-the-parler-data" class="section level3">
 <h3>Plotting the Parler Data</h3>
@@ -201,7 +204,7 @@ data_sf &lt;- st_as_sf(data, coords=c(&quot;LongitudeDD&quot;,&quot;LatitudeDD&q
 
 baseplot + 
   geom_sf(data = data_sf, alpha = .33, color=&#39;darkred&#39;)</code></pre>
-<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
 In addition to plotting the points, we can use the <code>st_intersects</code> function to match each GPR coordinate to the County it was posted from.</p>
 <pre class="r"><code>intersection &lt;- st_intersects(data_sf, shp)
 
@@ -222,7 +225,7 @@ map &lt;- merge %&gt;%
           #+ theme(plot.background= element_rect(fill = &quot;#EBF5FB&quot;, colour = &quot;#EBF5FB&quot;))
 
 map</code></pre>
-<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>We can also plot the data for the London region:</p>
 <pre class="r"><code>#map + coord_sf(ylim=c(51.4, 51.6), xlim=c(-0.25, +0.25)) + 
 #  geom_sf_label(aes(label=County), color=&#39;black&#39;, size=3)
@@ -234,14 +237,14 @@ labels &lt;- c(&#39;Westminster&#39;, &#39;Camden&#39;, &#39;Islington&#39;, &#3
 map + coord_sf(ylim=c(51.4, 51.6), xlim=c(-0.25, +0.1)) + 
   geom_sf_label(data=filter(merge, County %in% labels),
                 aes(label=County), color=&#39;black&#39;, size=3)</code></pre>
-<p><img src="../../posts/2021-01-17-draft-post/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 </div>
 <div id="references" class="section level2">
 <h2>References:</h2>
-<p><a href="https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf">Coordinate Reference Systems in R</a>
-<a href="https://epsg.io/4299">TM65 Projection</a></p>
-<p><a href="https://www.r-spatial.org/r/2018/10/25/ggplot2-sf-2.html">Drawing Mpas in R</a></p>
+<p><a href="https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf">Coordinate Reference Systems in R</a></p>
+<p><a href="https://epsg.io/4299">TM65 Projection</a></p>
+<p><a href="https://www.r-spatial.org/r/2018/10/25/ggplot2-sf-2.html">Drawing Maps in R</a></p>
 </div>
 
     </div>
