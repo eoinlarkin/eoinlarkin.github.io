@@ -95,7 +95,7 @@
 <p>Following this, each post was linked to the relevant County boundary and the map was color coded by their proportional contribution to the total number of posts.</p>
 <p><img src="images/unnamed-chunk-6-1.png" style="width:80.0%;height:80.0%" /></p>
 <p>This map does have a disadvantage in that very small geographical regions are not very visible. In particular, we can’t see the county of Westminster which is the county with the greatest number of posts.</p>
-<p>The plot area can be narrowed to a specific region - London:</p>
+<p>The plot area can be narrowed to a specific region - plot below shows the subset of the area around London:</p>
 <p><img src="images/unnamed-chunk-7-1.png" style="width:80.0%;height:80.0%" /></p>
 <div id="r-code" class="section level2">
 <h2>R Code</h2>
@@ -107,26 +107,9 @@
 <li>Link the Parler posts to the county of origin and plot posts by county</li>
 </ul>
 <pre class="r"><code># Importing the libraries used to manipulate and visualise the data
-library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
-<pre><code>## v ggplot2 3.3.3     v purrr   0.3.4
-## v tibble  3.0.4     v dplyr   1.0.2
-## v tidyr   1.1.2     v stringr 1.4.0
-## v readr   1.4.0     v forcats 0.5.0</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(maps)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;maps&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     map</code></pre>
-<pre class="r"><code>library(sf)</code></pre>
-<pre><code>## Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1</code></pre>
-<pre class="r"><code># Defining the Projections
-tm65 &lt;- &quot;+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs&quot;
-OSGB &lt;- &quot;+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs&quot;</code></pre>
+library(tidyverse)
+library(maps)
+library(sf)</code></pre>
 <div id="importing-the-republic-of-ireland-shapefile" class="section level3">
 <h3>Importing the Republic of Ireland Shapefile</h3>
 <p>The shapefile for the Republic of Ireland was sourced from the 2011 Census dataset.</p>
@@ -137,6 +120,9 @@ shp_ire &lt;- st_read(file.path(path, &quot;Census2011_Admin_Counties_generalise
 
 # Removing unneeded columns
 shp_ire &lt;- shp_ire %&gt;% select(ID = NUTS3, County = COUNTYNAME)
+
+# Defining the TM65 projection
+tm65 &lt;- &quot;+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs&quot;
 
 # Setting the CRS (Coordinate Reference System) mapping to the file
 st_crs(shp_ire) &lt;- tm65
@@ -149,7 +135,7 @@ shp_ire %&gt;%
   ggplot() +
   geom_sf() +
   theme_void()</code></pre>
-<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <p>As we can see, the shapefile excludes Northern Ireland - this can be sourced from the Great Britain shapefile.</p>
 </div>
 <div id="importing-the-great-britain-shapefile" class="section level3">
@@ -160,6 +146,9 @@ shp_ire %&gt;%
 
 # Removing unneeded columns
 shp_gb &lt;- shp_gb %&gt;% select(ID = ctyua19cd, County = ctyua19nm)
+
+# Defining the OSGB projection
+OSGB &lt;- &quot;+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs&quot;
 
 # Setting the CRS mapping to the file
 st_crs(shp_gb) &lt;- OSGB
@@ -187,7 +176,7 @@ baseplot &lt;- shp %&gt;%
               theme_void()
 
 baseplot</code></pre>
-<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="plotting-the-parler-data" class="section level3">
 <h3>Plotting the Parler Data</h3>
@@ -204,7 +193,7 @@ data_sf &lt;- st_as_sf(data, coords=c(&quot;LongitudeDD&quot;,&quot;LatitudeDD&q
 
 baseplot + 
   geom_sf(data = data_sf, alpha = .33, color=&#39;darkred&#39;)</code></pre>
-<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
 In addition to plotting the points, we can use the <code>st_intersects</code> function to match each GPR coordinate to the County it was posted from.</p>
 <pre class="r"><code>intersection &lt;- st_intersects(data_sf, shp)
 
@@ -225,7 +214,7 @@ map &lt;- merge %&gt;%
           #+ theme(plot.background= element_rect(fill = &quot;#EBF5FB&quot;, colour = &quot;#EBF5FB&quot;))
 
 map</code></pre>
-<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>We can also plot the data for the London region:</p>
 <pre class="r"><code>#map + coord_sf(ylim=c(51.4, 51.6), xlim=c(-0.25, +0.25)) + 
 #  geom_sf_label(aes(label=County), color=&#39;black&#39;, size=3)
@@ -237,14 +226,17 @@ labels &lt;- c(&#39;Westminster&#39;, &#39;Camden&#39;, &#39;Islington&#39;, &#3
 map + coord_sf(ylim=c(51.4, 51.6), xlim=c(-0.25, +0.1)) + 
   geom_sf_label(data=filter(merge, County %in% labels),
                 aes(label=County), color=&#39;black&#39;, size=3)</code></pre>
-<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-17-mapping-parler-uk-ire/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 </div>
 <div id="references" class="section level2">
 <h2>References:</h2>
-<p><a href="https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf">Coordinate Reference Systems in R</a></p>
-<p><a href="https://epsg.io/4299">TM65 Projection</a></p>
-<p><a href="https://www.r-spatial.org/r/2018/10/25/ggplot2-sf-2.html">Drawing Maps in R</a></p>
+<ul>
+<li><a href="https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf">Coordinate Reference Systems in R</a></li>
+<li><a href="https://epsg.io/4299">TM65 Projection</a></li>
+<li><a href="https://epsg.io/27700">OSGB Projection</a></li>
+<li><a href="https://www.r-spatial.org/r/2018/10/25/ggplot2-sf-2.html">Drawing Maps in R</a></li>
+</ul>
 </div>
 
     </div>
