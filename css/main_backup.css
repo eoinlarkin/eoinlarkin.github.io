@@ -3,21 +3,39 @@ body {
   margin: 0;
   padding: 0;
   position: relative;
+  font-size: 14px;
 }
 
 body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  -moz-font-feature-settings: "liga" on;
+  -moz-font-feature-settings:h "liga" on;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
+/* CSS code for headers */
+h1 {
+	font-size: 36px;
+	color: #222;
+}	
+h2 {
+	font-size: 28px;
+	color: #222;
+}	
+h3 {
+	font-size: 24px;
+	color: #222;
+}	
+h4{
+	font-size: 20px;
+	color: #222;
+}	
+h5{
+	font-size: 18px;
+	color: #222;
+}	
 h6 {
+  font-size: 16px;	
   color: #222;
 }
 
@@ -27,6 +45,7 @@ a {
 
 code {
   background-color: rgba(0, 0, 0, 0.02);
+  font-size: 14px;
 }
 
 .wrapper {
@@ -94,7 +113,7 @@ code {
   max-width: 900px;
   margin: 30px auto 10px;
   padding: 0 15px;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
   color: #333;
 }
@@ -124,6 +143,7 @@ code {
 
 .article-content p {
   margin: 15px 0 25px;
+  font-size: 16px;
 }
 
 .article-content a {
@@ -133,6 +153,7 @@ code {
   box-shadow: inset 0 -4px 0 #CBF8DF;
   background: transparent;
   transition: background 150ms ease;
+  font-size: 16px;
 }
 
 .article-content a:hover,
@@ -153,7 +174,7 @@ code {
   border-radius: 3px;
   position: relative;
   margin: 40px 0;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .highlight pre {
@@ -275,7 +296,7 @@ code {
   }
 
   .content {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.8;
   }
 

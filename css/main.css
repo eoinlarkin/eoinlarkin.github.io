@@ -119,7 +119,7 @@ code {
 }
 
 .article-title {
-  font-size: 34px;
+  font-size: 34 px;
   color: #222;
   margin: 0;
   line-height: 1.3;
@@ -146,6 +146,7 @@ code {
   font-size: 16px;
 }
 
+/* Code for links within articles */
 .article-content a {
   text-decoration: none;
   color: inherit;
@@ -214,13 +215,16 @@ code {
   display: block;
 }
 
+
+
+/* Blog title link format */
 .archive-item-link {
   display: inline-block;
   text-decoration: none;
   font-size: 21px;
   font-weight: bold;
   color: #222;
-  padding: 5px 0;
+  padding: 3px 0;
   border-bottom: 1px solid #ddd;
 }
 

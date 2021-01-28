@@ -65,6 +65,16 @@ The idea is seductively simple - by analysing the data of publically available t
     </item>
     
     <item>
+      <title>Sentiment Analysis of Tweets to Irish Banks</title>
+      <link>/posts/2020-02-01-twitter-sentiment-banks/</link>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/2020-02-01-twitter-sentiment-banks/</guid>
+      <description>Analysing sentiment based on a text string is pretty classic introductory problem in the field of Machine Learning.
+The idea is seductively simple - by analysing the data of publicly available tweets is it possible to discern or extrapolate some additional analysis.</description>
+    </item>
+    
+    <item>
       <title>Bookshelf</title>
       <link>/bookshelf/</link>
       <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
