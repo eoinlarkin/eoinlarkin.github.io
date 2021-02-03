@@ -27,16 +27,6 @@ Following the US Capitol protest on the 6th January 2021 a number of service pro
     </item>
     
     <item>
-      <title>Introduction to Network Analysis with R</title>
-      <link>/posts/2020-10-06-network-analysis-intro/</link>
-      <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/posts/2020-10-06-network-analysis-intro/</guid>
-      <description>Konigsberg Bridges
-Network analysis has its origins in the Königsberg Bridge problem. The problem was to find a walk through the city that would cross each of the 7 bridges exactly once. In 1736 Euler studied a way to solve this problem mathematically.</description>
-    </item>
-    
-    <item>
       <title>Visualizing Strava Activities with R</title>
       <link>/posts/2020-09-26-visualizing-strava-activities-with-r/</link>
       <pubDate>Sat, 26 Sep 2020 00:00:00 +0000</pubDate>
@@ -52,16 +42,6 @@ Following the US Capitol protest on the 6th January 2021 a number of service pro
       
       <guid>/posts/2020-08-01-shapefiles-r/</guid>
       <description>R and the ggplot library provide an extremely flexible framework for the plotting and visualisation of data. Plots can be extended to not just traditional line and bar plots but also to geospatial visualisations (or choropleths)</description>
-    </item>
-    
-    <item>
-      <title>Sentiment Analysis of Tweets to Irish Banks</title>
-      <link>/posts/2020-02-01-twitter-sentiment-banks/</link>
-      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/posts/2020-02-01-twitter-sentiment-banks/</guid>
-      <description>Analysing sentiment based on a text string is pretty classic introductory problem in the field of Machine Learning.
-The idea is seductively simple - by analysing the data of publicly available tweets is it possible to discern or extrapolate some additional analysis.</description>
     </item>
     
     <item>
