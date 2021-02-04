@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Baby Boom or Not? - Plots &amp; Numbers</title>
+<meta property="og:title" content="Baby Boom or Not? - Plots &amp; Numbers">
+
+
+  <link href='../../favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+  <meta property="description" content="Using R it&#39;s relatively easy to import and analyse Central Statistics Office data - in this instance mortality and birth rates.">
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="../../css/fonts.css" media="all">
+<link rel="stylesheet" href="../../css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="../../" class="nav-logo">
+    <img src="../../images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../bookshelf/">Bookshelf</a></li>
+    
+    <li><a href="../../heatmaps/">Heatmaps</a></li>
+    
+    <li><a href="https://github.com/eoinlarkin/">GitHub</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">5 min read</span>
+    
+
+    <h1 class="article-title">Baby Boom or Not?</h1>
+
+    
+    <span class="article-date">2021-01-21</span>
+    
+
+    <div class="article-content">
+      
+<script src="../../posts/2021-01-21-births-visualisation/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>For this</p>
+<div class="figure">
+<img src="images/births001.png" width="800" alt="" />
+<p class="caption">births_viz</p>
+</div>
+<p>In addition to visualising the births over time, we can also plot the death rate, using the same format:</p>
+<div class="figure">
+<img src="images/deaths001.png" width="800" alt="" />
+<p class="caption">deaths_viz</p>
+</div>
+<p>Finally, the CSO dataset breaks down the number of births to those that occurred outside of marriage and the births that related to a married couple. Traditionally, having a child outside of marriage was frowned upon, however in recent years this has become much more common as the societal-norms have become more liberal.</p>
+<p>The data supports this trend; we can see that starting from a very low base this proportion grew relatively quickly during the 80’s and the 90’s before the growth rate declined in the 00’s. Overall the trend is increasing over time, with the rate of increase slowing in recent years.</p>
+<p><img src="images/marriage001.png" width="800" /></p>
+<div id="r-code" class="section level2">
+<h2>R Code</h2>
+<p>The first step is to load in te required packages into R. We will be using <code>ggplot2</code> for the plotting as well as some of the packages from the Tidyverse. In order to source the CSO data, this can be done very simply with the <code>csodata</code> R package.</p>
+<pre class="r"><code># Importing Required libraries
+
+library(csodata) # library to get data from the CSO
+library(zoo) # used to get function to replace na values with next value
+library(ggplot2)
+library(tidyverse)
+library(magrittr)
+library(lubridate)</code></pre>
+<p>The CSO dataset we are interested in is <code>VSQ01</code>. Further information on the dataset can be found here: <a href="&#39;https://data.gov.ie/dataset/1e28883d-b671-415b-9228-e820535dda39&#39;">link</a></p>
+<pre class="r"><code>data &lt;- cso_get_data(&#39;VSQ01&#39;)</code></pre>
+<pre><code>## Loaded cached data</code></pre>
+<pre class="r"><code># Previewing the data
+dim(data)</code></pre>
+<pre><code>## [1]  15 243</code></pre>
+<pre class="r"><code># Reformatting the data for plotting
+data.transpose &lt;- t(data[c(1,4,7,10,13), ])
+labels &lt;- rownames(data.transpose)
+
+data.transpose &lt;- cbind(labels, data.transpose)
+
+# Removing the first two rows as these contain label data
+data.transpose &lt;- data.transpose[-c(1:2),]</code></pre>
+<pre class="r"><code># Inserting 2017Q4 data
+# For now, this is set equal to 2017Q2 data
+q4_2017 &lt;- as.list(data.transpose[data.transpose[,1]==&#39;2017Q3&#39;,])
+q4_2017$labels &lt;- &quot;2017Q4&quot;
+
+# merging data
+data.transpose &lt;- rbind(data.transpose, q4_2017)
+rownames(data.transpose) &lt;- NULL</code></pre>
+<pre class="r"><code>data_final &lt;- as.data.frame(data.transpose)
+
+names(data_final)[1] &lt;- &quot;period&quot;
+names(data_final)[2] &lt;- &quot;population&quot;
+names(data_final)[3] &lt;- &quot;births&quot;
+names(data_final)[4] &lt;- &quot;births_within_marriage&quot;
+names(data_final)[5] &lt;- &quot;births_outside_marriage&quot;
+names(data_final)[6] &lt;- &quot;deaths&quot;
+
+# Replacing the na values with the next value
+data_final &lt;- na.locf(data_final, na.rm=FALSE, fromLast = TRUE)</code></pre>
+<pre class="r"><code>data_final$year &lt;- str_sub(data_final$period, 1, 4)
+data_final$quarter &lt;- as.numeric(str_sub(data_final$period, 6)) * 3
+data_final$date &lt;- make_date(year=data_final$year, month=data_final$quarter-2, day=1)
+
+# Converting selected columns from character to numeric
+data_final %&lt;&gt;%
+  mutate_at(c(&#39;year&#39;, &#39;quarter&#39;, &#39;births&#39;, 
+  &#39;population&#39;, &#39;births_within_marriage&#39;,
+  &#39;births_outside_marriage&#39;, &#39;deaths&#39;), as.numeric)
+
+# Calculating the birth rate per 1,000 of population
+data_final$rate &lt;- ( data_final$births / data_final$population ) * 1000
+data_final$death_rate &lt;- ( data_final$deaths / data_final$population ) * 1000
+
+# Sorting our data:
+data_final &lt;- data_final[order(data_final$date),]</code></pre>
+<p>Next we create a function for our tile plots. Normally it’s not necessary to create bespoke functions for plots, but given we will be creating variants of the same plot a function is useful to avoid having to repeat code unnecessarily.</p>
+<pre class="r"><code>## Tiled monthly plot function
+
+tile_plot &lt;- function(data, variable, title, subtitle, caption, viridis_color){
+
+# Creating the baseplot
+p &lt;- ggplot(data,
+            aes(y = factor(quarter,
+                           levels = c(3,6,9,12),
+                           labels = c(&quot;Q1&quot;, &quot;Q2&quot;, &quot;Q3&quot;, &quot;Q4&quot;),
+                           ordered = TRUE),
+                x = factor(year)))
+
+# Adding the births data
+p &lt;- p +  geom_tile(aes(fill = variable), color=&#39;lightgrey&#39;) + labs(x = &quot;&quot;, y = &quot;&quot;) +
+    scale_x_discrete(breaks = seq(1960, 2020, 5)) +
+    scale_fill_viridis_c(option = viridis_color)
+
+# Adding the labels
+p &lt;- p + labs(x = &quot;Year&quot;, 
+              title = title,
+              subtitle = subtitle,
+              caption = caption)
+
+# Cleaning up the theme and the formats
+p &lt;- p + theme(legend.position = &quot;right&quot;,
+               legend.justification = &quot;left&quot;,
+               plot.title = element_text(face = &quot;bold&quot;, size = 24),
+               plot.caption = element_text(size = 10),
+               plot.subtitle = element_text(size = 10),
+               panel.background = element_blank())
+
+return(p)
+}</code></pre>
+<p>The first plot is for the birth rates :</p>
+<pre class="r"><code># Plotting the final plot          
+p &lt;- tile_plot(data = data_final,
+              variable = data_final$rate,
+              viridis_color = &quot;inferno&quot;,
+              title = &quot;Quarterly Birth Rates, Republic of Ireland: 1960-2020&quot;,
+              subtitle = &quot;Births per 1,000 of population.&quot;,
+              caption = &quot;Data: Central Statistics Office&quot;
+              )
+
+#Saving the plot file as a png
+ggsave(&quot;births001.png&quot;, p, width = 10, height = 3.5)
+
+# Viewing the plot
+p</code></pre>
+<p><img src="../../posts/2021-01-21-births-visualisation/index_files/figure-html/unnamed-chunk-9-1.png" width="960" /></p>
+<p>Interesting, we can see the impact of not using standardised rates - if the absolute number of births is plotted we can end up drawing very different conclusions on the trend in births over time.</p>
+<pre class="r"><code># Plotting Births without standardisation        
+p &lt;- tile_plot(data = data_final,
+              variable = data_final$births,
+              viridis_color = &quot;inferno&quot;,
+              title = &quot;Quarterly Number of Births, Republic of Ireland: 1960-2020&quot;,
+              subtitle = &quot;Absolute Number of Births.&quot;,
+              caption = &quot;Data: Central Statistics Office&quot;
+              )
+
+# Viewing the plot
+p</code></pre>
+<p><img src="../../posts/2021-01-21-births-visualisation/index_files/figure-html/unnamed-chunk-10-1.png" width="960" /></p>
+<pre class="r"><code>p &lt;- tile_plot(data = data_final,
+              variable = data_final$death_rate,
+              viridis_color = &quot;viridis&quot;,
+              title = &quot;Quarterly Death Rates, Republic of Ireland: 1960-2020&quot;,
+              subtitle = &quot;Deaths per 1,000 of population.&quot;,
+              caption = &quot;Data: Central Statistics Office&quot;
+              )
+
+# Saving the plot file as a png
+# ggsave(&quot;deaths001.png&quot;, p, width = 12, height = 4, units = &quot;cm&quot;, dpi=1200)
+
+ggsave(&quot;deaths001.png&quot;, width=10, height=3.5)
+
+# Viewing the plot
+p</code></pre>
+<p><img src="../../posts/2021-01-21-births-visualisation/index_files/figure-html/unnamed-chunk-11-1.png" width="960" /></p>
+<p>In order to plot this data, we need to ‘melt’ the data in R. This is due the fact that <code>ggplot</code> is limited to plotting a single dataframe with a requirement for the reference data to be contained in a single column. The <code>melt</code> function reformats our data such that at every time period we have two entries; one representing births in marriage and the other for births outside of marriage.</p>
+<pre class="r"><code># stacked bar plot
+library(reshape2)
+
+plot_data &lt;- melt(data_final, 
+                  measure.vars=c(&quot;births_within_marriage&quot;, 
+                                 &quot;births_outside_marriage&quot;), 
+                  id.vars=c(&quot;date&quot;))
+
+
+# Area plot
+p &lt;- ggplot(plot_data, aes(fill=variable, y=value, x=date)) + 
+            geom_area(position=&quot;fill&quot;, stat=&quot;identity&quot;, alpha=0.8) +
+            scale_x_date(date_breaks = &quot;5 year&quot;, date_labels = &quot;%Y&quot;,
+                         expand=c(0,0)) 
+            
+# Adding the labels
+
+p &lt;- p + labs(x = &quot;Year&quot;, 
+              y = &quot;Proportion&quot;,
+              title = &quot;Proportion of Births Outside Marriage, Republic of Ireland: 1960-2020&quot;,
+              caption = &quot;Data: Central Statistics Office&quot;) +
+              scale_fill_manual(name = &#39;&#39;,
+                              labels = c(&#39;Births within Marriage&#39;,
+                                         &#39;Births outside Marriage&#39;),
+                              values=c(&#39;#1F968BFF&#39;,&#39;#440154FF&#39;))
+
+# Cleaning up the theme
+p &lt;- p + theme(panel.background = element_blank(),
+               legend.position = &#39;bottom&#39;,
+               axis.text.y = element_blank(), 
+               axis.ticks.y = element_blank())
+
+
+# Saving the plot file as a png
+ggsave(&quot;marriage001.png&quot;, p, width = 9, height = 5)
+
+# Viewing the plot
+p</code></pre>
+<p><img src="../../posts/2021-01-21-births-visualisation/index_files/figure-html/unnamed-chunk-12-1.png" width="864" /></p>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="../../index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="../../images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-173965746-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+
