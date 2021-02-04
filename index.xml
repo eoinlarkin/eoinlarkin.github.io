@@ -13,11 +13,8 @@
       <pubDate>Thu, 21 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>/posts/2021-01-21-births-visualisation/</guid>
-      <description>For this
-births_viz
-In addition to visualising the births over time, we can also plot the death rate, using the same format:
-deaths_viz
-Finally, the CSO dataset breaks down the number of births to those that occurred outside of marriage and the births that related to a married couple.</description>
+      <description>For this analysis, data on births, deaths and marriages was sourced from the Central Statistics Office (CSO). The CSO provides data on these metrics since 1960, on quarterly intervals.
+There are a number a different ways for visualising time series data - the tile plot is a useful approach as it’s possible to not just visualise trends over time but to also track trends in seasonal data.</description>
     </item>
     
     <item>
