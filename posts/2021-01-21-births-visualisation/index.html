@@ -15,7 +15,7 @@
 
 
   
-  <meta property="description" content="Using R it&#39;s relatively easy to import and analyse data from the Central Statistics Office of Ireland. A large number of datasets are available; in this instance trends in birth and mortality are analysed.">
+  <meta property="description" content="Using R it&#39;s relatively easy to import and analyse data from the Central Statistics Office of Ireland. A large number of datasets are available; for this post birth and mortality rates are analysed.">
   
 
 
@@ -85,13 +85,13 @@
 <p>For this analysis, data on births, deaths and marriages was sourced from the Central Statistics Office (CSO). The CSO provides data on these metrics since 1960, on quarterly intervals.</p>
 <p>There are a number a different ways for visualising time series data - the tile plot is a useful approach as it’s possible to not just visualise trends over time but to also track trends in seasonal data.</p>
 <p>In the following plot, each year is plotted separately with the quarters stacked vertically:</p>
-<p><img src="images/births001.png" width="800" /></p>
+<p><img src="images/births001.png" width="850" /></p>
 <p>The tile plot is a really useful way to visualise activity over time. Github use this plot format for visualising contributions: <a href="&#39;https://docs.github.com/en/github/setting-up-and-managing-your-github-profile/viewing-contributions-on-your-profile#contributions-calendar&#39;">link</a></p>
 <p>In addition to visualising the births over time, we can also plot the death rate, using the same format:</p>
-<p><img src="images/deaths001.png" width="800" /></p>
+<p><img src="images/deaths001.png" width="850" /></p>
 <p>Finally, the CSO dataset breaks down the number of births to those that occurred outside of marriage and the births that related to a married couple. Traditionally, having a child outside of marriage was frowned upon, however in recent years this has become much more common as the societal-norms have become more liberal.</p>
 <p>The data supports this trend; we can see that starting from a very low base this proportion grew relatively quickly during the 80’s and the 90’s before the growth rate declined in the 00’s. Overall the trend is increasing over time, with the rate of increase slowing in recent years.</p>
-<p><img src="images/marriage001.png" width="800" /></p>
+<p><img src="images/marriage001.png" width="850" /></p>
 <p>So baby-boom or not ? Based on the plots, the overall trend is downwards - unlike the United States there has been no noticeable uplift in the birth rate since as 1960 such as the one that that was experienced in the United States following World War II.</p>
 <div id="r-code" class="section level2">
 <h2>R Code</h2>
