@@ -6,8 +6,8 @@
 <meta name="generator" content="Hugo 0.80.0" />
 
 
-<title>Mapping Covid-19 rates using Animated Plots - Plots &amp; Numbers</title>
-<meta property="og:title" content="Mapping Covid-19 rates using Animated Plots - Plots &amp; Numbers">
+<title>Analysing Covid-19 rates using Animated Plots - Plots &amp; Numbers</title>
+<meta property="og:title" content="Analysing Covid-19 rates using Animated Plots - Plots &amp; Numbers">
 
 
   <link href='../../favicon.ico' rel='icon' type='image/x-icon'/>
@@ -71,7 +71,7 @@
     <span class="article-duration">6 min read</span>
     
 
-    <h1 class="article-title">Mapping Covid-19 rates using Animated Plots</h1>
+    <h1 class="article-title">Analysing Covid-19 rates using Animated Plots</h1>
 
     
     <span class="article-date">2021-01-01</span>
@@ -178,7 +178,7 @@ line_plot</code></pre>
 </div>
 <div id="county-level-data" class="section level2">
 <h2>County Level Data</h2>
-<p>The Covid-19 dataset also contains county level data <code>administrative_area_level_2</code> data field. This can be downloaded from the Covid-19 Data Hub by usng the <code>level=2</code> argument:</p>
+<p>The Covid-19 dataset also contains county level data <code>administrative_area_level_2</code> data field. This can be downloaded from the Covid-19 Data Hub by using the <code>level=2</code> argument:</p>
 <pre class="r"><code>ire_byregion &lt;- covid19(country=&#39;IE&#39;,
                         level=2,
                         start=&#39;2020-02-22&#39;,
@@ -217,7 +217,7 @@ drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &qu
            &quot;longitude&quot;, &quot;key&quot;, &quot;key_google_mobility&quot;, &quot;key_apple_mobility&quot;, &quot;key_numeric&quot;, &quot;key_alpha_2&quot;  )
 
 ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pre>
-<p>Using the data, the county level information can be plotted as follows, using the <code>viridis</code> color scale:</p>
+<p>Using the data, the county level information can be plotted as follows, using the <code>viridis</code> colour scale:</p>
 <pre class="r"><code>county_barplot &lt;- ggplot(drop_na(ire_byregion), aes(x=region, y=confirmed_7day_per_1000, fill=region)) +
                   geom_bar(stat=&quot;identity&quot;) +
                   scale_fill_viridis_d(alpha=0.75) +
