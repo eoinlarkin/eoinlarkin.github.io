@@ -268,7 +268,7 @@ county_barplot &lt;- county_barplot +
 
 # Previewing the plot prior to animation
 county_barplot</code></pre>
-<p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-3-1.png" width="1152" /></p>
+<p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
 <p>Finally, the barplot can be animated using the <code>transition_states</code> function. The <code>ease_aes</code> defines how the bars will move between each of the states:</p>
 <pre class="r"><code>county_barplot_animation &lt;- animate(county_barplot  +
                                         transition_states(date ,transition_length = 1,state_length = 0) +
