@@ -88,7 +88,7 @@
 <p>R provides a very flexible way to create animated plots using a combination of the <code>ggplot2</code> and the <code>gganimate</code> package.</p>
 <p>The following animated plots leverage data from the <a href="https://covid19datahub.io/index.html">Covid19 Data Hub</a> to created animated visualisations of the Covid-19 incidence rates in Ireland.</p>
 <p>The first plots visualise the time series for the number of cases in the Republic if Ireland over 2020 while the second tracks the 7 day incidence rate on a per county basis.</p>
-<p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
+<p><img src="images/line_plot_animation.gif" width="800" /></p>
 <p><img src="../../post/2021-01-01-covid-animations-r/county_barplot_animation.gif" /></p>
 <p><img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" /></p>
 <p>Although the code to generate the plots looks complex, it’s actually relatively straight forward to animate them - the real work is in summarizing the data and laying out the plots in the correct format.</p>
@@ -119,7 +119,7 @@ library(zoo)</code></pre>
 <p>Once the required data fields have been added, I have removed unnecessary fields from the data source. This is an optional step, but having a smaller dataframe will decrease the processing time required to create the animated plot.</p>
 <pre class="r"><code>ire_agg &lt;- covid19(country=&#39;IE&#39;,
                         level=1,
-                        start=&#39;2020-02-22&#39;,
+                        start=&#39;2020-03-01&#39;,
                         end=&#39;2020-12-31&#39;,
                         raw=FALSE,
                         verbose=FALSE)
@@ -154,14 +154,24 @@ drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &qu
 ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
 <p>Once, we have created the base data, the following code produces the plot that will form the basis of the visualisation:</p>
 <pre class="r"><code>line_plot &lt;- ire_agg %&gt;%
-              ggplot(aes(x=date, y=confirmed_delta)) +
-              geom_line(color=&#39;red4&#39;, size=0.8) +
-              geom_point(size = 1, color=&#39;red4&#39;) + 
+             filter(date &gt;= &#39;2020-03-31&#39;) %&gt;%
+              ggplot() +
+              geom_line(aes(x=date, y=confirmed_7day), color=&#39;red4&#39;, size=0.8) +
+              geom_area(aes(x = date, y = confirmed_delta), fill = &quot;red4&quot;, alpha=0.25) +    
+              geom_point(aes(x=date, y=confirmed_delta), size = 1.5, color=&#39;black&#39;) + 
               theme(legend.position=&quot;bottom&quot;, plot.margin=margin(5.5, 60, 5.5, 5.5)) + #increasing margin
               scale_color_viridis_d(name=&quot;Method of Discovery&quot;) +
-              labs(title = &quot;Number of Positive Cases by Day&quot;) +
-              ylab(&quot;Number of Daily Cases&quot;) +
-              xlab(&quot;Date&quot;)
+              scale_y_continuous(labels = scales::comma) + 
+              labs(title = &quot;Republic of Ireland: Positive Cases by Day&quot;,
+                   x = &quot;&quot;,
+                   y = &quot;&quot;,
+                   subtitle = &quot;Daily cases and 7-day rolling average&quot;,
+                   caption = &quot;Source: DATA SOURCE&quot;) +
+              scale_x_date(date_breaks=&quot;1 month&quot;, date_labels=&#39;%B&#39;) +
+              theme(plot.title = element_text(face = &quot;bold&quot;, size = 18),
+                   plot.caption = element_text(size = 10),
+                   plot.subtitle = element_text(size = 10),
+                   panel.background = element_blank())
 
 # Viewing the plot
 line_plot</code></pre>
@@ -169,11 +179,13 @@ line_plot</code></pre>
 <p>The following code then takes the base plot and animates it over time. In order to animate the plot the <code>gganimate</code> package is used. The code <code>transition_reveal(date)</code> tells R to use the <code>date</code> field as the basis of our plot animation.</p>
 <pre class="r"><code>line_plot_animation &lt;- animate(line_plot + transition_reveal(date),
                                renderer = gifski_renderer(loop = T),
-                               height=350,
-                               width=700)
+                               width = 800,
+                               height = 400,
+                               nframes=200)
 
 # Saving the plot output
-#anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)</code></pre>
+anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)
+line_plot_animation</code></pre>
 <p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
 </div>
 <div id="county-level-data" class="section level2">
@@ -341,19 +353,6 @@ anim_save(&quot;choropleth_covid_ire.gif&quot;, plot_output)</code></pre>
 
 
     
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-173965746-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-
   </body>
 </html>
 
