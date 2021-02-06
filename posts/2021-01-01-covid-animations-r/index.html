@@ -88,8 +88,8 @@
 <p>R provides a very flexible way to create animated plots using a combination of the <code>ggplot2</code> and the <code>gganimate</code> package.</p>
 <p>The following animated plots leverage data from the <a href="https://covid19datahub.io/index.html">Covid19 Data Hub</a> to created animated visualisations of the Covid-19 incidence rates in Ireland.</p>
 <p>The first two plots visualise the time series for the number of cases in the Republic of Ireland over 2020 while the second tracks the 7 day incidence rate on a per county basis.</p>
-<p><img src="images/line_plot_animation.gif" /></p>
-<p><img src="images/county_barplot_animation.gif" /></p>
+<p><img src="images/line_plot_animation.gif" />{850px}</p>
+<p><img src="images/county_barplot_animation.gif" />{850px}</p>
 <p>The final plot visualises the 7 day incidence rate on a map :</p>
 <p><img src="images/choropleth_covid_ire.gif" /></p>
 <p>Although the code to generate the plots looks complex, it’s actually relatively straight forward to animate them - the real work is in summarizing the data and laying out the plots in the correct format.</p>
@@ -191,7 +191,7 @@ line_plot</code></pre>
 # Saving the plot output
 anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)
 line_plot_animation</code></pre>
-<p><img src="images/line_plot_animation.gif" width="800" /></p>
+<p><img src="images/line_plot_animation.gif" width="850" /></p>
 </div>
 <div id="county-level-data" class="section level2">
 <h2>County Level Data</h2>
@@ -281,7 +281,7 @@ county_barplot</code></pre>
 
 # Saving the plot output
 anim_save(&quot;county_barplot_animation.gif&quot;, county_barplot_animation)</code></pre>
-<p><img src="images/county_barplot_animation.gif" /></p>
+<p><img src="images/county_barplot_animation.gif" />{850px}</p>
 </div>
 </div>
 <div id="animated-plot-by-county" class="section level1">
@@ -354,7 +354,7 @@ plot</code></pre>
 plot_output &lt;- animate(anim, nframes = 200, renderer = gifski_renderer(loop = T),
                        height = 800, width =1000)
 anim_save(&quot;choropleth_covid_ire.gif&quot;, plot_output)</code></pre>
-<p><img src="images/line_plot_animation.gif" /></p>
+<p><img src="images/choropleth_covid_ire.gif" /></p>
 </div>
 </div>
 
