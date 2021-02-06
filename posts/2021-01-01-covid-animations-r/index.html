@@ -6,8 +6,8 @@
 <meta name="generator" content="Hugo 0.80.0" />
 
 
-<title>Analysing Covid-19 rates using Animated Plots - Plots &amp; Numbers</title>
-<meta property="og:title" content="Analysing Covid-19 rates using Animated Plots - Plots &amp; Numbers">
+<title>Animating Covid-19 Plots - Plots &amp; Numbers</title>
+<meta property="og:title" content="Animating Covid-19 Plots - Plots &amp; Numbers">
 
 
   <link href='../../favicon.ico' rel='icon' type='image/x-icon'/>
@@ -68,10 +68,10 @@
 
   <article class="article">
     
-    <span class="article-duration">6 min read</span>
+    <span class="article-duration">7 min read</span>
     
 
-    <h1 class="article-title">Analysing Covid-19 rates using Animated Plots</h1>
+    <h1 class="article-title">Animating Covid-19 Plots</h1>
 
     
     <span class="article-date">2021-01-01</span>
@@ -87,10 +87,11 @@
 <p>Although it was a bad year for the world, 2020 was a great year for data visualisation with visualisations of both Covid-19 and US Election inescapable. Some great examples can be seen <a href="https://fivethirtyeight.com/features/the-40-weirdest-and-best-charts-we-made-in-2020/" title="FiveThirtyEight">here</a> and <a href="https://www.ft.com/content/4b82956b-0155-4781-b40e-951c32a95f75" title="Financial Times">here</a></p>
 <p>R provides a very flexible way to create animated plots using a combination of the <code>ggplot2</code> and the <code>gganimate</code> package.</p>
 <p>The following animated plots leverage data from the <a href="https://covid19datahub.io/index.html">Covid19 Data Hub</a> to created animated visualisations of the Covid-19 incidence rates in Ireland.</p>
-<p>The first plots visualise the time series for the number of cases in the Republic if Ireland over 2020 while the second tracks the 7 day incidence rate on a per county basis.</p>
-<p><img src="images/line_plot_animation.gif" width="800" /></p>
-<p><img src="../../post/2021-01-01-covid-animations-r/county_barplot_animation.gif" /></p>
-<p><img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" /></p>
+<p>The first two plots visualise the time series for the number of cases in the Republic of Ireland over 2020 while the second tracks the 7 day incidence rate on a per county basis.</p>
+<p><img src="images/line_plot_animation.gif" /></p>
+<p><img src="images/county_barplot_animation.gif" /></p>
+<p>The final plot visualises the 7 day incidence rate on a map :</p>
+<p><img src="images/choropleth_covid_ire.gif" /></p>
 <p>Although the code to generate the plots looks complex, it’s actually relatively straight forward to animate them - the real work is in summarizing the data and laying out the plots in the correct format.</p>
 </div>
 <div id="loading-requried-packages" class="section level2">
@@ -158,19 +159,23 @@ ire_agg &lt;- ire_agg[ , !(names(ire_agg) %in% drops)]</code></pre>
               ggplot() +
               geom_line(aes(x=date, y=confirmed_7day), color=&#39;red4&#39;, size=0.8) +
               geom_area(aes(x = date, y = confirmed_delta), fill = &quot;red4&quot;, alpha=0.25) +    
-              geom_point(aes(x=date, y=confirmed_delta), size = 1.5, color=&#39;black&#39;) + 
-              theme(legend.position=&quot;bottom&quot;, plot.margin=margin(5.5, 60, 5.5, 5.5)) + #increasing margin
-              scale_color_viridis_d(name=&quot;Method of Discovery&quot;) +
+              geom_point(aes(x=date, y=confirmed_delta), size = 1.5, color=&#39;black&#39;)
+
+# Formatting the axes:
+line_plot &lt;- line_plot +
               scale_y_continuous(labels = scales::comma) + 
-              labs(title = &quot;Republic of Ireland: Positive Cases by Day&quot;,
+              scale_x_date(date_breaks=&quot;1 month&quot;, date_labels=&#39;%B&#39;)         
+
+# Adding title and subtitles
+line_plot &lt;- line_plot +    
+             labs(title = &quot;Covid-19 Positive Cases: Republic of Ireland&quot;,
                    x = &quot;&quot;,
                    y = &quot;&quot;,
-                   subtitle = &quot;Daily cases and 7-day rolling average&quot;,
-                   caption = &quot;Source: DATA SOURCE&quot;) +
-              scale_x_date(date_breaks=&quot;1 month&quot;, date_labels=&#39;%B&#39;) +
+                   subtitle = &quot;Daily positive cases and 7-day rolling average&quot;,
+                   caption = &quot;Source: Covid-19 Data Hub&quot;) +
               theme(plot.title = element_text(face = &quot;bold&quot;, size = 18),
                    plot.caption = element_text(size = 10),
-                   plot.subtitle = element_text(size = 10),
+                   plot.subtitle = element_text(size = 12),
                    panel.background = element_blank())
 
 # Viewing the plot
@@ -179,14 +184,14 @@ line_plot</code></pre>
 <p>The following code then takes the base plot and animates it over time. In order to animate the plot the <code>gganimate</code> package is used. The code <code>transition_reveal(date)</code> tells R to use the <code>date</code> field as the basis of our plot animation.</p>
 <pre class="r"><code>line_plot_animation &lt;- animate(line_plot + transition_reveal(date),
                                renderer = gifski_renderer(loop = T),
-                               width = 800,
-                               height = 400,
+                               width = 1000,
+                               height = 500,
                                nframes=200)
 
 # Saving the plot output
 anim_save(&quot;line_plot_animation.gif&quot;, line_plot_animation)
 line_plot_animation</code></pre>
-<p><img src="../../post/2021-01-01-covid-animations-r/line_plot_animation.gif" /></p>
+<p><img src="images/line_plot_animation.gif" width="800" /></p>
 </div>
 <div id="county-level-data" class="section level2">
 <h2>County Level Data</h2>
@@ -229,21 +234,46 @@ drops &lt;- c(&quot;vaccines&quot;,&quot;tests&quot;, &quot;recovered&quot;, &qu
            &quot;longitude&quot;, &quot;key&quot;, &quot;key_google_mobility&quot;, &quot;key_apple_mobility&quot;, &quot;key_numeric&quot;, &quot;key_alpha_2&quot;  )
 
 ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pre>
-<p>Using the data, the county level information can be plotted as follows, using the <code>viridis</code> colour scale:</p>
-<pre class="r"><code>county_barplot &lt;- ggplot(drop_na(ire_byregion), aes(x=region, y=confirmed_7day_per_1000, fill=region)) +
-                  geom_bar(stat=&quot;identity&quot;) +
-                  scale_fill_viridis_d(alpha=0.75) +
+<p>Using the data, the county level information can be plotted as follows, with each bar representing an indivudal county:</p>
+<pre class="r"><code>county_barplot &lt;- ire_byregion %&gt;%
+                  drop_na %&gt;%
+                  filter(date &gt;= &#39;2020-03-31&#39;) %&gt;%
+                  ggplot() +
+                  geom_bar(aes(x=region, 
+                               y=confirmed_7day_per_1000), 
+                               color=&#39;darkred&#39;,
+                               fill= &#39;red4&#39;,
+                               alpha = 0.25,
+                               stat=&quot;identity&quot;,
+                               size = 0.25)
+
+# Formatting the axes and hiding the legend                  
+county_barplot &lt;- county_barplot +    
                   theme(legend.position = &quot;none&quot;) + # hiding the legend
                   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + #rotating the labels
-                  labs(title=&#39;Seven Day Incidence Rate by County per 1000 of Population&#39;) +
-                  xlab(&#39;County&#39;) + ylab(&#39;Confirmed Cases per 1000&#39;)
+                  xlab(&#39;County&#39;) + 
+                  ylab(&#39;Confirmed Cases per 1000&#39;)
+
+# Adding title, subtitle and captions
+county_barplot &lt;- county_barplot + 
+                  labs(title = &quot;Covid-19 Positive Cases Rate: Republic of Ireland&quot;,
+                       subtitle = &quot;Seven Day Incidence Rate by County per 1000 of Population&quot;,
+                       caption = &quot;Source: Covid-19 Data Hub&quot;) +
+                  theme(plot.title = element_text(face = &quot;bold&quot;, size = 18),
+                       plot.caption = element_text(size = 10),
+                       plot.subtitle = element_text(size = 12),
+                       panel.background = element_blank())
+
+
+
+# Previewing the plot prior to animation
 county_barplot</code></pre>
 <p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-3-1.png" width="1152" /></p>
 <p>Finally, the barplot can be animated using the <code>transition_states</code> function. The <code>ease_aes</code> defines how the bars will move between each of the states:</p>
 <pre class="r"><code>county_barplot_animation &lt;- animate(county_barplot  +
                                         transition_states(date ,transition_length = 1,state_length = 0) +
                                         ease_aes(&#39;sine-in-out&#39;) +
-                                        labs(subtitle = &quot;Date: {closest_state}&quot;),
+                                        labs(subtitle = &quot;Seven Day Incidence Rate by County per 1000 of Population - {closest_state}&quot;),
                                renderer = gifski_renderer(loop = T),
                                height=400,
                                width=1000,
@@ -251,7 +281,7 @@ county_barplot</code></pre>
 
 # Saving the plot output
 anim_save(&quot;county_barplot_animation.gif&quot;, county_barplot_animation)</code></pre>
-<p><img src="../../post/2021-01-01-covid-animations-r/county_barplot_animation.gif" /></p>
+<p><img src="images/county_barplot_animation.gif" /></p>
 </div>
 </div>
 <div id="animated-plot-by-county" class="section level1">
@@ -282,34 +312,49 @@ ire_byregion &lt;- ire_byregion[ , !(names(ire_byregion) %in% drops)]</code></pr
 <h2>Plot Shapefile data</h2>
 <p>Once the shapefile is imported we can plot it using <code>ggplot</code>. The following code produces the plot prior to animation:</p>
 <pre class="r"><code>baselayer &lt;-  spdf.df %&gt;%
-              # filter(date &gt;= &#39;2020-12-01&#39;) %&gt;%
+              filter(date &gt;= &#39;2020-03-31&#39;) %&gt;%
               tidyr::drop_na() %&gt;%
               ggplot(.) + 
                       aes(long, lat, group=group) +
                       geom_polygon(colour=&quot;grey&quot;)
 
+# Adding the data and color theme
 plot &lt;-   baselayer + 
           aes(fill=(confirmed_7day_per_1000)) +
-          labs(x=NULL, y=NULL) +
           coord_map(&quot;gilbert&quot;) +
-          scale_fill_distiller(palette = &#39;YlOrRd&#39;, direction=1, guide=&#39;colorbar&#39;) + 
-          guides(fill = guide_colourbar(title=&#39;Cases per 1000&#39;, barwidth = 0.5, barheight = 10)) +
-          theme(panel.border = element_blank(),
-                panel.background = element_blank(),
-                axis.ticks = element_blank(),
-                axis.text = element_blank()) + 
-          labs(title=&quot;Number of New Daily Cases - 7 Day Rolling Average&quot;) 
+          scale_fill_viridis_c(option = &#39;inferno&#39;, direction=1, guide=&#39;colorbar&#39;) + 
+          guides(fill = guide_colourbar(title=&#39;Cases per 1000&#39;, 
+                                        barwidth = 0.5, 
+                                        barheight = 10)) 
 
+# Adding Caption, subtitle, datasource
+plot &lt;- plot + 
+    labs(title = &quot;Covid-19 Positive Cases Rate: Republic of Ireland&quot;,
+         subtitle = &quot;Seven Day Incidence Rate per 1000 of Population&quot;,
+         caption = &quot;Source: Covid-19 Data Hub&quot;,
+         x = &quot;&quot;,
+         y = &quot;&quot;) +
+    theme(plot.title = element_text(face = &quot;bold&quot;, size = 18),
+          plot.caption = element_text(size = 10),
+          plot.subtitle = element_text(size = 12),
+          plot.title.position = &quot;plot&quot;) +
+    theme(panel.border = element_blank(),
+          panel.background = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text = element_blank())
+    
+# Previewing plot prior to animation
 plot</code></pre>
-<p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="../../posts/2021-01-01-covid-animations-r/index_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
 </div>
 <div id="animating-the-choropleth" class="section level2">
 <h2>Animating the Choropleth</h2>
 <p>Finally, we can animate the choropleth with the following code:</p>
-<pre class="r"><code>anim &lt;- plot + transition_time(date) + labs(subtitle = &quot;Date: {frame_time}&quot;)
-plot_output &lt;- animate(anim, nframes = 200, renderer = gifski_renderer(loop = T))
+<pre class="r"><code>anim &lt;- plot + transition_time(date) + labs(subtitle = &quot;Seven Day Incidence Rate per 1000 of Population: {frame_time}&quot;)
+plot_output &lt;- animate(anim, nframes = 200, renderer = gifski_renderer(loop = T),
+                       height = 800, width =1000)
 anim_save(&quot;choropleth_covid_ire.gif&quot;, plot_output)</code></pre>
-<p><img src="../../post/2021-01-01-covid-animations-r/choropleth-ireland-covid-counties.gif" /></p>
+<p><img src="images/line_plot_animation.gif" /></p>
 </div>
 </div>
 
