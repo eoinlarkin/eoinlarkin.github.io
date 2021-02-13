@@ -258,8 +258,9 @@ p &lt;- ggplot(plot_data, aes(fill=variable, y=value, x=date)) +
 # Adding the labels
 
 p &lt;- p + labs(x = &quot;Year&quot;, 
-              y = &quot;Proportion&quot;,
-              title = &quot;Proportion of Births Outside Marriage, Republic of Ireland: 1960-2020&quot;,
+              y = &quot;&quot;,
+              title = &quot;Proportion of Births Outside Marriage: 1960-2020&quot;,
+              subtile = &quot;Republic of Ireland&quot;,
               caption = &quot;Data: Central Statistics Office&quot;) +
               scale_fill_manual(name = &#39;&#39;,
                               labels = c(&#39;Births within Marriage&#39;,
@@ -270,8 +271,10 @@ p &lt;- p + labs(x = &quot;Year&quot;,
 p &lt;- p + theme(panel.background = element_blank(),
                legend.position = &#39;bottom&#39;,
                axis.text.y = element_blank(), 
-               axis.ticks.y = element_blank())
-
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(face = &quot;bold&quot;, size = 24),
+               plot.caption = element_text(size = 10),
+               plot.subtitle = element_text(size = 10))
 
 # Saving the plot file as a png
 ggsave(&quot;marriage001.png&quot;, p, width = 9, height = 4)
@@ -328,19 +331,6 @@ p</code></pre>
 
 
     
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-173965746-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-
   </body>
 </html>
 
