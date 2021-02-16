@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Forecasting using Time Series Models - Plots &amp; Numbers</title>
+<meta property="og:title" content="Forecasting using Time Series Models - Plots &amp; Numbers">
+
+
+  <link href='../../favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+  <meta property="description" content="Using Time Series models can we predict the recovery of passenger numbers in the airline industry.">
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="../../css/fonts.css" media="all">
+<link rel="stylesheet" href="../../css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="../../" class="nav-logo">
+    <img src="../../images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../bookshelf/">Bookshelf</a></li>
+    
+    <li><a href="../../heatmaps/">Heatmaps</a></li>
+    
+    <li><a href="https://github.com/eoinlarkin/">GitHub</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">4 min read</span>
+    
+
+    <h1 class="article-title">Forecasting using Time Series Models</h1>
+
+    
+    <span class="article-date">2021-02-06</span>
+    
+
+    <div class="article-content">
+      
+<script src="../../posts/2021-02-06-time-series-heathrow/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>When it comes to building forecasting models there are a number of valid approaches and frameworks that can be used. Our models can be as simple as scaling prior values by a set factor. There is nothing necessarily wrong with this approach; ultimately all models are wrong the most important attribute of a model is that it’s useful <a href="https://en.wikipedia.org/wiki/All_models_are_wrong">*</a> !</p>
+<p>If we were to opt for a more complex approach, time series modelling approaches provide a powerful framework with the benefit of being easily implementable in R.</p>
+<p>Time series modelling seeks to decompose the data series into the following components:</p>
+<ul>
+<li>Trend component e.g. is my series increasing over time ?</li>
+<li>Seasonal component e.g. ice-cream sales are at their highest in the summer</li>
+<li>Cyclical component; similar to the seasonal component however the change in demand does not follow a cyclical pattern</li>
+<li>Irregular component; changes due to random fluctuations e.g. ice-cream sales spike as it’s an unusually warm summer</li>
+</ul>
+<p>The following chart plots a time series dataset showing the development of Apple iPhone sales for the period 2008 to 2018.</p>
+<p><img src="images/iphone_sales.png" width="850" /></p>
+<p>We can further decompose the plot into the trend, seasonal and irregular components:</p>
+<p><img src="images/iphone_sales_decomposed.png" width="850" /></p>
+<p>For this analysis, we will take historic passenger data for Heathrow Airport and see how the model benchmarks versus actual data.</p>
+<div id="r-code" class="section level2">
+<h2>R Code</h2>
+<p>For the modelling, the <code>fable</code> package (<strong>F</strong>orecast T<strong>able</strong>) is used; this is the successor to the <code>forecast</code> package. The main advantage of Fable over Forecast is that it extends the modelling framework to the multivariate case while retaining the features of the <code>forecast</code> package.</p>
+<p><a href="https://rpubs.com/marakis/belgium_flights_forecasting" class="uri">https://rpubs.com/marakis/belgium_flights_forecasting</a></p>
+<pre class="r"><code># Importing the required libraries for the analysis
+library(tsibble)
+library(fable) # the Forecast Table package
+library(feasts)
+library(tidyverse)
+library(lubridate) # for re-encoding certain date fields
+library(ggplot2) # for plotting
+library(scales) # to make working with scales easier</code></pre>
+</div>
+<div id="dataset" class="section level2">
+<h2>Dataset</h2>
+<p>Data for passenger traffic at Heathrow Airport was sourced directly from the airport website:<a href="https://www.heathrow.com/company/investor-centre/reports/traffic-statistics">link</a>. In addition to data for Heathrow, additional information for some of the regional airports is available. However for the purpose of the this analysis only data for the main Heathrow Airport is considered.</p>
+<pre class="r"><code>passengers &lt;- read.csv(&#39;heathrow_passengers.csv&#39;, fileEncoding=&quot;UTF-8-BOM&quot;)
+
+library(lubridate)
+passengers[,1] &lt;- dmy(passengers[,1])
+
+# renaming the columns in the data frame
+names(passengers) &lt;- c(&#39;date&#39;, &#39;monthly_total&#39;)</code></pre>
+<p>The following plot shows the historic passenger traffic through Heathrow Airport - some obvious trends are noticable:</p>
+<p><img src="images/heathrow_area_plot.png" width="850" /></p>
+<ul>
+<li>Seasonal nature of the airport traffic</li>
+<li>General upward trend in number of passengers travelling through the airport</li>
+<li>Significant decrease in traffic during 2020 as a result of Covid-19</li>
+</ul>
+<p>Having imported the data into R as a dataframe, it’s necessary to convert it to a <code>tsibble</code> object before it can be used for modelling.</p>
+<pre class="r"><code># Re-encoding the date format so it can be detected by fable
+passengers$date  &lt;- yearmonth(passengers$date)
+
+# Coverting our dataframe to a time series tibble
+passengers &lt;- as_tsibble(passengers, index=date)
+
+# plotting the passenger data
+# autoplot(passengers, .vars=monthly_total)</code></pre>
+<p>For the analysis, an ARIMA model is fitted; this is one form of Time Series models - other types include Exponential Smoothing models <a href="https://en.wikipedia.org/wiki/Exponential_smoothing">link</a> or models for datasets that exhibit heteroscedasticity <a href="https://en.wikipedia.org/wiki/Autoregressive_conditional_heteroskedasticity">link</a>.</p>
+<p>For the initial analysis, only data up to December 2018 is used to fit the model. We will then analyse how this model performs compared to the actual observed values.</p>
+<pre class="r"><code># Fitting an ARIMA model
+library(feasts)
+
+fit &lt;- passengers %&gt;% 
+  filter(format(date, format = &quot;%Y-%m&quot;) &lt;= &#39;2018-12&#39;) %&gt;% 
+  model(arima = ARIMA())
+
+# Preview our model parameters
+# glance(fit)
+
+# Creating forecasts for 1 year
+fc &lt;- fit %&gt;%
+  forecast(h = &quot;1 year&quot;) 
+
+# Isolating the 2019 data
+data_2019 &lt;- passengers %&gt;% filter(format(date, format = &quot;%Y-%m&quot;) &lt;= &#39;2019-12&#39; &amp;
+                                 format(date, format = &quot;%Y-%m&quot;) &gt;= &#39;2019-01&#39;)
+
+fc %&gt;% 
+  autoplot() +
+  geom_line(data = data_2019, 
+            aes(x = date, 
+                y = monthly_total, 
+                color=&#39;darkred&#39;), size=1.25) +
+            scale_color_discrete(name = &quot;&quot;, labels = c(&quot;Actual Values&quot;)) +
+            scale_y_continuous(labels = comma) +
+            labs(title = &#39;Heathrow Airport Monthly Traffic&#39;,
+                 x = &#39;&#39;,
+                 y = &#39;Monthly Passengers&#39;)</code></pre>
+<p><img src="../../posts/2021-02-06-time-series-heathrow/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>We can see that the forecast is pretty accurate; our forecasts are within the 95% confidence inteval for every month except September. Not bad ! Now lets see what happens if we extend our model to 2020 :</p>
+<p><img src="images/heathrow_fc_2019_2020.png" width="700" /></p>
+<p>Not so great…….</p>
+<p><img src="images/heathrow_fc_2020_h2.png" width="700" /></p>
+<p>If we refit our model to include data up to June 2020, the forecast does improve. However we can see that over time the model reverts to the mean.</p>
+<p>So what’s the conclusion - at June 2020 3,000,000 may have been a reasonable forecast of passengers at December. However, the true value at December was 1,000,000. Notwithstanding this, time series analysis, when used appropriately provides a powerful framework for forecasting.</p>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="../../index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="../../images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+
