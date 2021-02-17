@@ -15,7 +15,7 @@
 
 
   
-  <meta property="description" content="Using Time Series models can we predict the recovery of passenger numbers in the airline industry.">
+  <meta property="description" content="Using Time Series models can we predict the recovery of passenger numbers in the airline industry following the impact of Covid-19.">
   
 
 
@@ -82,20 +82,20 @@
 <script src="../../posts/2021-02-06-time-series-heathrow/index_files/header-attrs/header-attrs.js"></script>
 
 
-<p>When it comes to building forecasting models there are a number of valid approaches and frameworks that can be used. Our models can be as simple as scaling prior values by a set factor. There is nothing necessarily wrong with this approach; ultimately all models are wrong the most important attribute of a model is that it’s useful <a href="https://en.wikipedia.org/wiki/All_models_are_wrong">*</a> !</p>
+<p>When it comes to building forecasting models there are a number of valid approaches and frameworks that can be used. Our models can be as simple as scaling prior values by a set factor. There is nothing necessarily wrong with this approach; ultimately all models are wrong the most important attribute of a good odel is that it’s useful <a href="https://en.wikipedia.org/wiki/All_models_are_wrong">*</a> !</p>
 <p>If we were to opt for a more complex approach, time series modelling approaches provide a powerful framework with the benefit of being easily implementable in R.</p>
-<p>Time series modelling seeks to decompose the data series into the following components:</p>
+<p>Using time series modelling we aim to decompose the data series into the following components:</p>
 <ul>
 <li>Trend component e.g. is my series increasing over time ?</li>
 <li>Seasonal component e.g. ice-cream sales are at their highest in the summer</li>
 <li>Cyclical component; similar to the seasonal component however the change in demand does not follow a cyclical pattern</li>
 <li>Irregular component; changes due to random fluctuations e.g. ice-cream sales spike as it’s an unusually warm summer</li>
 </ul>
-<p>The following chart plots a time series dataset showing the development of Apple iPhone sales for the period 2008 to 2018.</p>
-<p><img src="images/iphone_sales.png" width="850" /></p>
-<p>We can further decompose the plot into the trend, seasonal and irregular components:</p>
-<p><img src="images/iphone_sales_decomposed.png" width="850" /></p>
-<p>For this analysis, we will take historic passenger data for Heathrow Airport and see how the model benchmarks versus actual data.</p>
+<p>An example of a time series is the following plot which shows the development of Apple iPhone sales for the period 2008 to 2018.</p>
+<p><img src="images/iphone_sales.png" width="850" />
+We can further decompose the plot into the trend, seasonal and irregular components:
+<img src="images/iphone_sales_decomposed.png" width="850" /></p>
+<p>For this analysis, we will take historic passenger data for Heathrow Airport and see how the an ARIMA Time Series model benchmarks versus actual data.</p>
 <div id="r-code" class="section level2">
 <h2>R Code</h2>
 <p>For the modelling, the <code>fable</code> package (<strong>F</strong>orecast T<strong>able</strong>) is used; this is the successor to the <code>forecast</code> package. The main advantage of Fable over Forecast is that it extends the modelling framework to the multivariate case while retaining the features of the <code>forecast</code> package.</p>
@@ -171,8 +171,10 @@ fc %&gt;%
 <p><img src="images/heathrow_fc_2019_2020.png" width="700" /></p>
 <p>Not so great…….</p>
 <p><img src="images/heathrow_fc_2020_h2.png" width="700" /></p>
-<p>If we refit our model to include data up to June 2020, the forecast does improve. However we can see that over time the model reverts to the mean.</p>
-<p>So what’s the conclusion - at June 2020 3,000,000 may have been a reasonable forecast of passengers at December. However, the true value at December was 1,000,000. Notwithstanding this, time series analysis, when used appropriately provides a powerful framework for forecasting.</p>
+<p>If we refit our model to include data up to June 2020, the forecast does improve. However we can see that over time the model has a tendency to revert to the mean.</p>
+<p>What’s happening here is that our model, using the data that was provided for the fitting purposes assumed that air traffic passengers at Heathrow would return to approximately 3 million passengers by December 2020. Winding the clock back, that might not have been an unreasonable assumption at the the time.</p>
+<p>In reality, air traffic passengers did recover in August as predicted by the model before plateauing for the rest of the year as Covid-19 mobility restrictions remained in place.</p>
+<p>So what’s the conclusion? Time Series models do provide a framework for predicting trends and forecasting. Notwithstanding this, context is important and the utility of the model should always be considered in the current context which we are producing forecasts for.</p>
 </div>
 
     </div>
