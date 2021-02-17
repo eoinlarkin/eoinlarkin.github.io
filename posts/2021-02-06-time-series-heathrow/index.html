@@ -68,7 +68,7 @@
 
   <article class="article">
     
-    <span class="article-duration">4 min read</span>
+    <span class="article-duration">5 min read</span>
     
 
     <h1 class="article-title">Forecasting using Time Series Models</h1>
@@ -118,13 +118,13 @@ passengers[,1] &lt;- dmy(passengers[,1])
 
 # renaming the columns in the data frame
 names(passengers) &lt;- c(&#39;date&#39;, &#39;monthly_total&#39;)</code></pre>
-<p>The following plot shows the historic passenger traffic through Heathrow Airport - some obvious trends are noticable:</p>
-<p><img src="images/heathrow_area_plot.png" width="850" /></p>
+<p>The following plot shows the historic passenger traffic through Heathrow Airport - some obvious trends are noticeable:</p>
 <ul>
 <li>Seasonal nature of the airport traffic</li>
 <li>General upward trend in number of passengers travelling through the airport</li>
 <li>Significant decrease in traffic during 2020 as a result of Covid-19</li>
 </ul>
+<p><img src="images/heathrow_area_plot.png" width="850" /></p>
 <p>Having imported the data into R as a dataframe, it’s necessary to convert it to a <code>tsibble</code> object before it can be used for modelling.</p>
 <pre class="r"><code># Re-encoding the date format so it can be detected by fable
 passengers$date  &lt;- yearmonth(passengers$date)
@@ -134,7 +134,7 @@ passengers &lt;- as_tsibble(passengers, index=date)
 
 # plotting the passenger data
 # autoplot(passengers, .vars=monthly_total)</code></pre>
-<p>For the analysis, an ARIMA model is fitted; this is one form of Time Series models - other types include Exponential Smoothing models <a href="https://en.wikipedia.org/wiki/Exponential_smoothing">link</a> or models for datasets that exhibit heteroscedasticity <a href="https://en.wikipedia.org/wiki/Autoregressive_conditional_heteroskedasticity">link</a>.</p>
+<p>For the analysis, an ARIMA model is fitted; this is one form of Time Series models - other types include Exponential Smoothing models <a href="https://en.wikipedia.org/wiki/Exponential_smoothing">Exponential Smoothing models</a> or <a href="https://en.wikipedia.org/wiki/Autoregressive_conditional_heteroskedasticity">ARCH Models</a> for datasets that exhibit heteroscedasticity.</p>
 <p>For the initial analysis, only data up to December 2018 is used to fit the model. We will then analyse how this model performs compared to the actual observed values.</p>
 <pre class="r"><code># Fitting an ARIMA model
 library(feasts)
@@ -166,11 +166,12 @@ fc %&gt;%
                  x = &#39;&#39;,
                  y = &#39;Monthly Passengers&#39;)</code></pre>
 <p><img src="../../posts/2021-02-06-time-series-heathrow/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>We can see that the forecast is pretty accurate; our forecasts are within the 95% confidence inteval for every month except September. Not bad ! Now lets see what happens if we extend our model to 2020 :</p>
+<p>Having fit the model using data up to December 2018, we then can forecast airport traffic for 2019. The blue lines show the forecast with the associated 95% and 80% confidence intervals. The red line indicates the actual amount of passenger traffic for 2019.</p>
+<p>We can see that the forecast is pretty accurate; our forecasts are within the 95% confidence interval for every month except September. Not bad ! Now lets see what happens if we extend our model to 2020 :</p>
 <p><img src="images/heathrow_fc_2019_2020.png" width="700" /></p>
 <p>Not so great…….</p>
-<p><img src="images/heathrow_fc_2020_h2.png" width="700" /></p>
 <p>If we refit our model to include data up to June 2020, the forecast does improve. However we can see that over time the model has a tendency to revert to the mean.</p>
+<p><img src="images/heathrow_fc_2020_h2.png" width="700" /></p>
 <p>What’s happening here is that our model, using the data that was provided for the fitting purposes assumed that air traffic passengers at Heathrow would return to approximately 3 million passengers by December 2020. Winding the clock back, that might not have been an unreasonable assumption at the the time.</p>
 <p>In reality, air traffic passengers did recover in August as predicted by the model before plateauing for the rest of the year as Covid-19 mobility restrictions remained in place.</p>
 <p>So what’s the conclusion? Time Series models do provide a framework for predicting trends and forecasting. Notwithstanding this, context is important and the utility of the model should always be considered in the current context which we are producing forecasts for.</p>
