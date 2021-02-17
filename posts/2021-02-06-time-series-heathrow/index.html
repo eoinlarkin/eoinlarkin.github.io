@@ -99,7 +99,6 @@ We can further decompose the plot into the trend, seasonal and irregular compone
 <div id="r-code" class="section level2">
 <h2>R Code</h2>
 <p>For the modelling, the <code>fable</code> package (<strong>F</strong>orecast T<strong>able</strong>) is used; this is the successor to the <code>forecast</code> package. The main advantage of Fable over Forecast is that it extends the modelling framework to the multivariate case while retaining the features of the <code>forecast</code> package.</p>
-<p><a href="https://rpubs.com/marakis/belgium_flights_forecasting" class="uri">https://rpubs.com/marakis/belgium_flights_forecasting</a></p>
 <pre class="r"><code># Importing the required libraries for the analysis
 library(tsibble)
 library(fable) # the Forecast Table package
@@ -175,6 +174,13 @@ fc %&gt;%
 <p>What’s happening here is that our model, using the data that was provided for the fitting purposes assumed that air traffic passengers at Heathrow would return to approximately 3 million passengers by December 2020. Winding the clock back, that might not have been an unreasonable assumption at the the time.</p>
 <p>In reality, air traffic passengers did recover in August as predicted by the model before plateauing for the rest of the year as Covid-19 mobility restrictions remained in place.</p>
 <p>So what’s the conclusion? Time Series models do provide a framework for predicting trends and forecasting. Notwithstanding this, context is important and the utility of the model should always be considered in the current context which we are producing forecasts for.</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ul>
+<li><a href="https://fable.tidyverts.org/articles/fable.html">Introudction to Fable</a></li>
+<li><a href="https://rpubs.com/marakis/belgium_flights_forecasting">Multivariate Forecasting</a></li>
+</ul>
 </div>
 
     </div>
